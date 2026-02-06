@@ -8,8 +8,12 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "start": "node .output/server/index.mjs",
     "test": "vitest",
     "test:ui": "vitest --ui"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.984.0",

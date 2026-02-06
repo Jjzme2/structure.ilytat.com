@@ -32,6 +32,12 @@
             class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
         </div>
 
+        <div class="flex items-center justify-end">
+          <NuxtLink to="/forgot-password" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+            Forgot your password?
+          </NuxtLink>
+        </div>
+
         <button type="submit" :disabled="loading"
           class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
           <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3">
