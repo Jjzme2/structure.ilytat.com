@@ -1,0 +1,16 @@
+export default defineNuxtPlugin((nuxtApp) => {
+    const config = useRuntimeConfig()
+    const firebaseApp = useFirebaseApp()
+
+    if (import.meta.client) {
+        console.log('%c 🏢 ILYTAT HQ | System Initialization ', 'background: #1e1e2e; color: #cdd6f4; font-weight: bold; padding: 4px; border-radius: 4px;')
+
+        if (firebaseApp) {
+            console.log(`%c 🔥 Firebase connected: ${config.public.firebaseProjectId} `, 'color: #f9e2af;')
+        } else {
+            console.warn('%c ⚠️ Firebase not initialized! ', 'color: #f38ba8;')
+        }
+
+        console.log('%c 🚀 Application started in ' + (import.meta.dev ? 'development' : 'production') + ' mode ', 'color: #89b4fa;')
+    }
+})

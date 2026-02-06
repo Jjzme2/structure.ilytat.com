@@ -1,0 +1,115 @@
+import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
+import { useCurrentUser, useFirestore } from 'vuefire'
+import type { Quote, Task, ImportantDate } from '~/types'
+
+export interface DailySnapshot {
+    quote: Quote | null
+    tasks: {
+        focusCount: number
+        doneCount: number
+        topTask: Task | null
+    }
+    events: ImportantDate[]
+    metadata: any | null
+}
+
+export const useDaily = () => {
+    const user = useCurrentUser()
+    const db = useFirestore()
+    const dailySnapshot = ref<DailySnapshot | null>(null)
+    const loading = ref(false)
+
+    const todayStr = computed(() => new Date().toISOString().split('T')[0])
+
+    const fetchDaily = async () => {
+        if (!user.value) return
+        loading.value = true
+
+        try {
+            const date = todayStr.value
+            const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
+            const dailySnap = await getDoc(dailyRef)
+
+            let selectedQuote: Quote | null = null
+
+            // 1. Handle Daily Quote
+            if (dailySnap.exists()) {
+                selectedQuote = dailySnap.data() as Quote
+            } else {
+                // Try fetching user quotes first
+                const userQuotesQuery = query(collection(db, 'quotes'), where('userId', '==', user.value.uid))
+                const userQuotesSnap = await getDocs(userQuotesQuery)
+
+                let pool: Quote[] = []
+
+                if (!userQuotesSnap.empty) {
+                    pool = userQuotesSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Quote[]
+                } else {
+                    // Fallback to system quotes
+                    const systemQuotesQuery = query(collection(db, 'quotes'), where('userId', '==', 'system'))
+                    const systemQuotesSnap = await getDocs(systemQuotesQuery)
+                    if (!systemQuotesSnap.empty) {
+                        pool = systemQuotesSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Quote[]
+                    }
+                }
+
+                if (pool.length > 0) {
+                    selectedQuote = pool[Math.floor(Math.random() * pool.length)] || null
+                    if (selectedQuote) {
+                        // Persist selection for the day
+                        await setDoc(dailyRef, selectedQuote)
+                    }
+                }
+            }
+
+            // 2. Fetch Tasks Summary
+            const tasksQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', user.value.uid)
+            )
+            const tasksSnap = await getDocs(tasksQuery)
+            const todayTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
+
+            const focusTasks = todayTasks.filter(t => t.status === 'focus' && t.focusDate === date)
+                .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))
+            const doneToday = todayTasks.filter(t => t.status === 'done' && t.completedAt) // Simple filter for now
+
+            // 3. Fetch Today's Events
+            const datesQuery = query(
+                collection(db, 'dates'),
+                where('userId', '==', user.value.uid),
+                where('date', '==', date)
+            )
+            const datesSnap = await getDocs(datesQuery)
+            const todayEvents = datesSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ImportantDate[]
+
+            // 4. Fetch Metadata
+            const metaRef = doc(db, 'metadata', 'system') // Example global metadata
+            const metaSnap = await getDoc(metaRef)
+            const systemMeta = metaSnap.exists() ? metaSnap.data() : null
+
+            dailySnapshot.value = {
+                quote: selectedQuote,
+                tasks: {
+                    focusCount: focusTasks.length,
+                    doneCount: doneToday.length,
+                    topTask: focusTasks[0] || null
+                },
+                events: todayEvents,
+                metadata: systemMeta
+            }
+
+        } catch (e) {
+            console.error('useDaily: Error fetching consolidated snapshot', e)
+        } finally {
+            loading.value = false
+        }
+    }
+
+    return {
+        dailySnapshot,
+        fetchDaily,
+        loading,
+        todayStr
+    }
+}

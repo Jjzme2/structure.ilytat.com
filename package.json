@@ -1,0 +1,42 @@
+{
+  "name": "hq-ilytat-com",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.984.0",
+    "@emailjs/browser": "^4.4.1",
+    "firebase": "^12.9.0",
+    "firebase-admin": "^13.6.1",
+    "mime-types": "^3.0.2",
+    "nuxt": "^4.3.0",
+    "nuxt-vuefire": "^1.1.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.27",
+    "vue-router": "^4.6.4",
+    "vuefire": "^3.2.2"
+  },
+  "devDependencies": {
+    "@nuxt/test-utils": "^3.23.0",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^0.11.3",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/mime-types": "^3.0.1",
+    "@vitejs/plugin-vue": "^6.0.4",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.24",
+    "happy-dom": "^20.5.0",
+    "jsdom": "^28.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "vitest": "^3.2.4"
+  }
+}

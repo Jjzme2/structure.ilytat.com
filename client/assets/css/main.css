@@ -1,0 +1,471 @@
+@import "tailwindcss";
+
+@theme {
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+    --font-serif: 'Cinzel', serif;
+}
+
+:root {
+    /* Default (Headquarters / Command Center) */
+    /* Deep Navy & Slate with Amber/Gold Signal accents */
+    --bg-primary: #0f172a;
+    /* slate-900 */
+    --text-primary: #f8fafc;
+    /* slate-50 */
+    --text-secondary: #94a3b8;
+    /* slate-400 */
+
+    --accent-primary: #f59e0b;
+    /* amber-500 - Signal/Alert feel */
+    --accent-secondary: #3b82f6;
+    /* blue-500 - Trusted data feel */
+
+    /* Acrylic/Glass settings - More structural, less "neon" */
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-executive {
+    /* Executive (Light / Admin) */
+    --bg-primary: #ffffff;
+    --text-primary: #0f172a;
+    /* slate-900 */
+    --text-secondary: #64748b;
+    /* slate-500 */
+
+    --accent-primary: #0f172a;
+    /* slate-900 - Sharp, bold authority */
+    --accent-secondary: #0ea5e9;
+    /* sky-500 - Clean interface */
+
+    --glass-bg: rgba(248, 250, 252, 0.85);
+    /* slate-50 */
+    --glass-border: rgba(148, 163, 184, 0.2);
+    /* slate-400 */
+
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-ops {
+    /* Ops (Field / Terminal) */
+    --bg-primary: #020617;
+    /* slate-950 (almost black) */
+    --text-primary: #10b981;
+    /* emerald-500 */
+    --text-secondary: #059669;
+    /* emerald-600 */
+
+    --accent-primary: #10b981;
+    /* emerald-500 */
+    --accent-secondary: #f59e0b;
+    /* amber-500 - Warnings */
+
+    --glass-bg: rgba(2, 6, 23, 0.95);
+    --glass-border: rgba(16, 185, 129, 0.2);
+
+    --font-heading: var(--font-mono);
+    --font-text: var(--font-mono);
+}
+
+.theme-deep-space {
+    /* Deep Space (Cyberpunk/Neon) */
+    --bg-primary: linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #4c1d95 100%);
+    --text-primary: #e0e7ff;
+    /* indigo-100 */
+    --text-secondary: #818cf8;
+    /* indigo-400 */
+    --accent-primary: #c084fc;
+    /* purple-400 */
+    --accent-secondary: #38bdf8;
+    /* sky-400 */
+    --glass-bg: rgba(30, 27, 75, 0.8);
+    --glass-border: rgba(192, 132, 252, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-sunset {
+    /* Sunset (Warm - Requested Red/Pink) */
+    --bg-primary: linear-gradient(135deg, #4a0404 0%, #9f1239 50%, #e11d48 100%);
+    --text-primary: #fff7ed;
+    /* orange-50 */
+    --text-secondary: #fdba74;
+    /* orange-300 */
+    --accent-primary: #f97316;
+    /* orange-500 */
+    --accent-secondary: #fda4af;
+    /* rose-300 */
+    --glass-bg: rgba(74, 4, 4, 0.8);
+    --glass-border: rgba(251, 113, 133, 0.3);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-nature {
+    /* Nature (Organic) */
+    --bg-primary: linear-gradient(135deg, #022c22 0%, #14532d 50%, #166534 100%);
+    --text-primary: #f0fdf4;
+    /* green-50 */
+    --text-secondary: #86efac;
+    /* green-300 */
+    --accent-primary: #4ade80;
+    /* green-400 */
+    --accent-secondary: #facc15;
+    /* yellow-400 */
+    --glass-bg: rgba(2, 44, 34, 0.85);
+    --glass-border: rgba(74, 222, 128, 0.3);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-midnight {
+    /* Midnight (High Contrast) */
+    --bg-primary: #000000;
+    --text-primary: #ffffff;
+    --text-secondary: #a3a3a3;
+    /* neutral-400 */
+    --accent-primary: #ffffff;
+    --accent-secondary: #525252;
+    /* neutral-600 */
+    --glass-bg: rgba(0, 0, 0, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --font-heading: var(--font-mono);
+    --font-text: var(--font-mono);
+}
+
+.theme-crimson {
+    /* Crimson (Aggressive) */
+    --bg-primary: linear-gradient(135deg, #000000 0%, #4c0519 100%);
+    --text-primary: #ffe4e6;
+    /* rose-100 */
+    --text-secondary: #fda4af;
+    /* rose-300 */
+    --accent-primary: #e11d48;
+    /* rose-600 */
+    --accent-secondary: #be123c;
+    /* rose-700 */
+    --glass-bg: rgba(0, 0, 0, 0.9);
+    --glass-border: rgba(225, 29, 72, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-frost {
+    /* Frost (Glassmorphism Focus) */
+    --bg-primary: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --text-primary: #0c4a6e;
+    --text-secondary: #0369a1;
+    --accent-primary: #0ea5e9;
+    --accent-secondary: #38bdf8;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-ether {
+    /* Ether (Deep Teal Glass) */
+    --bg-primary: radial-gradient(circle at top, #0d9488 0%, #042f2e 100%);
+    --text-primary: #ccfbf1;
+    --text-secondary: #5eead4;
+    --accent-primary: #2dd4bf;
+    --accent-secondary: #99f6e4;
+    --glass-bg: rgba(13, 148, 136, 0.2);
+    --glass-border: rgba(45, 212, 191, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-nebula {
+    /* Nebula (Abstract - Vibrant) */
+    --bg-primary: linear-gradient(225deg, #4c1d95 0%, #831843 50%, #1e1b4b 100%);
+    --text-primary: #fdf2f8;
+    --text-secondary: #fce7f3;
+    --accent-primary: #f472b6;
+    --accent-secondary: #a78bfa;
+    --glass-bg: rgba(30, 27, 75, 0.6);
+    --glass-border: rgba(244, 114, 182, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-aurora {
+    /* Aurora (Abstract - Organic) */
+    --bg-primary: linear-gradient(135deg, #064e3b 0%, #0d9488 40%, #06b6d4 70%, #2dd4bf 100%);
+    --text-primary: #f0fdfa;
+    --text-secondary: #99f6e4;
+    --accent-primary: #2dd4bf;
+    --accent-secondary: #22d3ee;
+    --glass-bg: rgba(6, 78, 59, 0.4);
+    --glass-border: rgba(45, 212, 191, 0.4);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-solaris {
+    /* Solaris (High Contrast Solar) */
+    --bg-primary: #000000;
+    --text-primary: #fff7ed;
+    --text-secondary: #fed7aa;
+    --accent-primary: #f97316;
+    --accent-secondary: #ea580c;
+    --glass-bg: rgba(249, 115, 22, 0.1);
+    --glass-border: rgba(249, 115, 22, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-obsidian {
+    /* Obsidian (Minimalist - Dark) */
+    --bg-primary: #111111;
+    --text-primary: #e5e5e5;
+    --text-secondary: #a3a3a3;
+    --accent-primary: #404040;
+    --accent-secondary: #262626;
+    --glass-bg: rgba(23, 23, 23, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-nordic {
+    /* Nordic (Minimalist - Professional) */
+    --bg-primary: #f3f4f6;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --accent-primary: #3b82f6;
+    --accent-secondary: #60a5fa;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(209, 213, 219, 0.5);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-mono {
+    /* Mono (Pure Minimalist) */
+    --bg-primary: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #525252;
+    --accent-primary: #000000;
+    --accent-secondary: #a3a3a3;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: #000000;
+    --font-heading: var(--font-mono);
+    --font-text: var(--font-mono);
+}
+
+.theme-royal {
+    /* Royal (Rich/Specialized) */
+    --bg-primary: radial-gradient(circle at top left, #1e3a8a 0%, #1e1b4b 100%);
+    --text-primary: #eff6ff;
+    --text-secondary: #bfdbfe;
+    --accent-primary: #fbbf24;
+    --accent-secondary: #fcd34d;
+    --glass-bg: rgba(30, 27, 75, 0.5);
+    --glass-border: rgba(251, 191, 36, 0.4);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-emerald {
+    /* Emerald (Crystalline) */
+    --bg-primary: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    --text-primary: #ecfdf5;
+    --text-secondary: #6ee7b7;
+    --accent-primary: #10b981;
+    --accent-secondary: #34d399;
+    --glass-bg: rgba(6, 78, 59, 0.6);
+    --glass-border: rgba(16, 185, 129, 0.4);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-cyber {
+    /* Cyber (Neon) */
+    --bg-primary: #050505;
+    --text-primary: #ffffff;
+    --text-secondary: #ff00ff;
+    --accent-primary: #00ffff;
+    --accent-secondary: #ff00ff;
+    --glass-bg: rgba(0, 0, 0, 0.8);
+    --glass-border: rgba(0, 255, 255, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-mono);
+}
+
+.theme-matrix {
+    /* Matrix (Digital) */
+    --bg-primary: #000000;
+    --text-primary: #00ff00;
+    --text-secondary: #008f11;
+    --accent-primary: #00ff00;
+    --accent-secondary: #003b00;
+    --glass-bg: rgba(0, 0, 0, 0.9);
+    --glass-border: rgba(0, 255, 0, 0.2);
+    --font-heading: var(--font-mono);
+    --font-text: var(--font-mono);
+}
+
+.theme-deepsea {
+    /* DeepSea (Abyssal) */
+    --bg-primary: linear-gradient(to bottom, #001219 0%, #002535 100%);
+    --text-primary: #e0f2fe;
+    --text-secondary: #0ea5e9;
+    --accent-primary: #06b6d4;
+    --accent-secondary: #0891b2;
+    --glass-bg: rgba(0, 18, 25, 0.8);
+    --glass-border: rgba(6, 182, 212, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-midnight-rose {
+    /* Midnight Rose (Moody) */
+    --bg-primary: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+    --text-primary: #fee2e2;
+    --text-secondary: #fbcfe8;
+    --accent-primary: #db2777;
+    --accent-secondary: #9d174d;
+    --glass-bg: rgba(30, 27, 75, 0.7);
+    --glass-border: rgba(219, 39, 119, 0.4);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-titanium {
+    /* Titanium (Industrial) */
+    --bg-primary: #1c1c1c;
+    --text-primary: #f2f2f2;
+    --text-secondary: #a1a1aa;
+    --accent-primary: #f97316;
+    --accent-secondary: #d97706;
+    --glass-bg: rgba(28, 28, 28, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-blueprint {
+    /* Blueprint (Technical) */
+    --bg-primary: #0a214d;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --accent-primary: #ffffff;
+    --accent-secondary: #3b82f6;
+    --glass-bg: rgba(10, 33, 77, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --font-heading: var(--font-mono);
+    --font-text: var(--font-mono);
+}
+
+.theme-vintage {
+    /* Vintage (Classic) */
+    --bg-primary: #fdf6e3;
+    --text-primary: #586e75;
+    --text-secondary: #839496;
+    --accent-primary: #b58900;
+    --accent-secondary: #cb4b16;
+    --glass-bg: rgba(253, 246, 227, 0.9);
+    --glass-border: rgba(88, 110, 117, 0.2);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-serif);
+}
+
+body {
+    background: var(--bg-primary);
+    /* Fallback */
+    background-attachment: fixed;
+    /* Parallax-ish feel */
+    color: var(--text-primary);
+    font-family: var(--font-text);
+    transition: color 0.5s ease;
+    min-height: 100vh;
+}
+
+.glass-nav {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-pill {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    /* Fully rounded */
+    transition: all 0.3s ease;
+}
+
+.glass-pill:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--glass-border);
+}
+
+.glass-active {
+    background-color: rgba(var(--accent-primary-rgb), 0.1);
+    /* Needs RGB var or hex opacity hack */
+    /* Fallback if RGB var not set, or use direct hex with opacity if possible, but let's try a glowing border approach */
+    background-color: transparent;
+    color: var(--accent-primary) !important;
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 0 10px -2px var(--accent-primary);
+    font-weight: 700;
+}
+
+.text-on-glass {
+    color: var(--text-secondary);
+}
+.glass-mosaic {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.01) 100%
+    );
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.37),
+        inset 0 0 80px rgba(255, 255, 255, 0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-mosaic::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/feTurbulence%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(var(--accent-primary-rgb), 0.2);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--accent-primary-rgb), 0.4);
+}
