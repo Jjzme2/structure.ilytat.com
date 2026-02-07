@@ -2,22 +2,35 @@ import { defineStore } from 'pinia'
 import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, serverTimestamp } from 'firebase/firestore'
 import { useCurrentUser, useCollection, useFirestore } from 'vuefire'
 import type { OKR } from '~/types'
+import { useTenant } from '~/composables/useTenant'
 
 export const useStrategyStore = defineStore('strategy', () => {
     const user = useCurrentUser()
     const db = useFirestore()
 
+    const scope = useTenant().scope
+    const tenantId = useTenant().tenantId
+
+    // Helper to get the correct collection path
+    const collectionPath = computed(() => {
+        if (!user.value) return 'okrs' // Fallback
+        return scope.value === 'personal'
+            ? `users/${user.value.uid}/okrs`
+            : `companies/${tenantId.value}/okrs`
+    })
+
     // OKRs
     const okrsQuery = computed(() => {
         if (!user.value) return null
-        return query(collection(db, 'okrs'), where('userId', '==', user.value.uid))
+        const coll = collection(db, collectionPath.value)
+        return query(coll)
     })
     const okrs = useCollection<OKR>(okrsQuery)
 
     // Actions
     const addOKR = async (data: Omit<OKR, 'id' | 'userId'>) => {
         if (!user.value) return
-        await addDoc(collection(db, 'okrs'), {
+        await addDoc(collection(db, collectionPath.value), {
             ...data,
             userId: user.value.uid,
             createdAt: serverTimestamp()
@@ -26,12 +39,12 @@ export const useStrategyStore = defineStore('strategy', () => {
 
     const updateOKRStatus = async (id: string, status: OKR['status']) => {
         if (!user.value) return
-        await updateDoc(doc(db, 'okrs', id), { status })
+        await updateDoc(doc(db, collectionPath.value, id), { status })
     }
 
     const deleteOKR = async (id: string) => {
         if (!user.value) return
-        await deleteDoc(doc(db, 'okrs', id))
+        await deleteDoc(doc(db, collectionPath.value, id))
     }
 
     const updateKeyResult = async (okrId: string, krId: string, current: number) => {
@@ -43,10 +56,12 @@ export const useStrategyStore = defineStore('strategy', () => {
             kr.id === krId ? { ...kr, current } : kr
         )
 
-        await updateDoc(doc(db, 'okrs', okrId), { keyResults: updatedKRs })
+        await updateDoc(doc(db, collectionPath.value, okrId), { keyResults: updatedKRs })
     }
 
     return {
+        scope,
+        collectionPath,
         okrs,
         addOKR,
         updateOKRStatus,

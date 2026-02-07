@@ -35,30 +35,41 @@
 
                 <!-- Export Menu -->
                 <div class="relative group/export">
-                    <button class="flex items-center gap-2 p-2.5 rounded-xl bg-glass border border-glass text-slate-400 hover:text-white transition-all">
+                    <button
+                        class="flex items-center gap-2 p-2.5 rounded-xl bg-glass border border-glass text-slate-400 hover:text-white transition-all">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span class="text-xs font-bold uppercase tracking-wider hidden md:block">Export</span>
                     </button>
-                    <div class="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl opacity-0 invisible group-hover/export:opacity-100 group-hover/export:visible transition-all z-50 overflow-hidden">
+                    <div
+                        class="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl opacity-0 invisible group-hover/export:opacity-100 group-hover/export:visible transition-all z-50 overflow-hidden">
                         <div class="px-4 py-3 border-b border-slate-800 bg-slate-900/50">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Export System</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Export
+                                System</span>
                         </div>
                         <div class="p-2 space-y-1">
                             <div v-for="fmt in ['json', 'yaml', 'xml', 'md', 'txt']" :key="fmt"
                                 class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition-colors group/row">
-                                <span class="text-xs font-mono font-bold text-slate-400 group-hover/row:text-white">{{ fmt.toUpperCase() }}</span>
+                                <span class="text-xs font-mono font-bold text-slate-400 group-hover/row:text-white">{{
+                                    fmt.toUpperCase() }}</span>
                                 <div class="flex gap-1">
-                                    <button @click="exportTasks(fmt as any, 'download')" 
+                                    <button @click="exportTasks(fmt as any, 'download')"
                                         class="p-2 rounded-lg text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
                                         title="Download">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
                                     </button>
-                                    <button @click="exportTasks(fmt as any, 'copy')" 
+                                    <button @click="exportTasks(fmt as any, 'copy')"
                                         class="p-2 rounded-lg text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
                                         title="Copy to Clipboard">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -159,7 +170,7 @@
                             </span>
                         </div>
                         <p v-if="task.description" class="text-slate-400 text-sm mt-1 line-clamp-2">{{ task.description
-                        }}</p>
+                            }}</p>
                         <p class="text-[10px] font-mono text-slate-600 uppercase tracking-widest mt-2">
                             {{ task.status === 'done' ? 'Completed' : task.status === 'focus' ? 'Today\'s Focus' :
                                 'Active' }} • ID: {{ task.id.slice(0, 8) }}
@@ -199,9 +210,10 @@
                     <h2 class="text-lg font-bold text-slate-400">Backlog</h2>
                     <span class="text-sm text-slate-600">({{ backlogTasks.length }})</span>
                 </div>
-                <div class="space-y-3 min-h-[200px] p-3 bg-glass border border-glass rounded-2xl">
-                    <div v-for="task in backlogTasks" :key="task.id"
-                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-text-secondary/30 transition-all">
+                <VueDraggable v-model="backlogList" group="tasks" :animation="150" ghost-class="ghost"
+                    class="space-y-3 min-h-[200px] p-3 bg-glass border border-glass rounded-2xl">
+                    <div v-for="task in backlogList" :key="task.id"
+                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-text-secondary/30 transition-all cursor-grab active:cursor-grabbing">
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -214,7 +226,7 @@
                             </div>
                         </div>
                         <p v-if="task.description" class="text-xs text-slate-500 mb-2 line-clamp-2">{{ task.description
-                        }}</p>
+                            }}</p>
                         <div class="flex flex-wrap gap-1">
                             <span v-if="task.category"
                                 class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
@@ -227,9 +239,9 @@
                             </span>
                         </div>
                     </div>
-                    <p v-if="backlogTasks.length === 0" class="text-center py-8 text-slate-600 text-sm">No tasks in
-                        backlog</p>
-                </div>
+                </VueDraggable>
+                <p v-if="backlogTasks.length === 0" class="text-center py-8 text-slate-600 text-sm">No tasks in backlog
+                </p>
             </div>
 
             <!-- Today's Focus Column -->
@@ -239,10 +251,11 @@
                     <h2 class="text-lg font-bold text-purple-400">Today's Focus</h2>
                     <span class="text-sm text-purple-600">({{ focusTasks.length }}/6)</span>
                 </div>
-                <div
+                <VueDraggable v-model="focusList" group="tasks" :animation="150" ghost-class="ghost"
+                    :move="checkFocusLimit"
                     class="space-y-3 min-h-[200px] p-3 bg-purple-950/20 border border-purple-800/30 rounded-2xl ring-1 ring-purple-500/10">
-                    <div v-for="task in focusTasks" :key="task.id"
-                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-accent-primary/50 transition-all">
+                    <div v-for="task in focusList" :key="task.id"
+                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-accent-primary/50 transition-all cursor-grab active:cursor-grabbing">
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <div>
                                 <span class="text-xs font-bold text-purple-400 mr-2">#{{ task.focusOrder }}</span>
@@ -258,17 +271,17 @@
                             </div>
                         </div>
                         <p v-if="task.description" class="text-xs text-slate-500 mb-2 line-clamp-2">{{ task.description
-                        }}</p>
+                            }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                             :class="getCategoryInfo(task.category)?.color">
                             {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
                         </span>
                     </div>
-                    <div v-if="focusTasks.length === 0" class="text-center py-8">
-                        <p class="text-purple-600 text-sm">Add tasks for today's focus</p>
-                        <p class="text-purple-700 text-xs mt-1">Maximum 6 tasks</p>
-                    </div>
+                </VueDraggable>
+                <div v-if="focusTasks.length === 0" class="text-center py-8">
+                    <p class="text-purple-600 text-sm">Add tasks for today's focus</p>
+                    <p class="text-purple-700 text-xs mt-1">Maximum 6 tasks</p>
                 </div>
             </div>
 
@@ -279,9 +292,10 @@
                     <h2 class="text-lg font-bold text-amber-400">In Progress</h2>
                     <span class="text-sm text-amber-600">({{ doingTasks.length }})</span>
                 </div>
-                <div class="space-y-3 min-h-[200px] p-3 bg-amber-950/20 border border-amber-800/30 rounded-2xl">
-                    <div v-for="task in doingTasks" :key="task.id"
-                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-accent-secondary/50 transition-all">
+                <VueDraggable v-model="doingList" group="tasks" :animation="150" ghost-class="ghost"
+                    class="space-y-3 min-h-[200px] p-3 bg-amber-950/20 border border-amber-800/30 rounded-2xl">
+                    <div v-for="task in doingList" :key="task.id"
+                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-accent-secondary/50 transition-all cursor-grab active:cursor-grabbing">
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -294,16 +308,16 @@
                             </div>
                         </div>
                         <p v-if="task.description" class="text-xs text-slate-500 mb-2 line-clamp-2">{{ task.description
-                        }}</p>
+                            }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                             :class="getCategoryInfo(task.category)?.color">
                             {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
                         </span>
                     </div>
-                    <p v-if="doingTasks.length === 0" class="text-center py-8 text-amber-700 text-sm">Start working on a
-                        focus task</p>
-                </div>
+                </VueDraggable>
+                <p v-if="doingTasks.length === 0" class="text-center py-8 text-amber-700 text-sm">Start working on a
+                    focus task</p>
             </div>
 
             <!-- Done Column -->
@@ -313,9 +327,10 @@
                     <h2 class="text-lg font-bold text-emerald-400">Done</h2>
                     <span class="text-sm text-emerald-600">({{ doneTasks.length }})</span>
                 </div>
-                <div class="space-y-3 min-h-[200px] p-3 bg-emerald-950/20 border border-emerald-800/30 rounded-2xl">
-                    <div v-for="task in doneTasks" :key="task.id"
-                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-text-secondary/30 transition-all opacity-70">
+                <VueDraggable v-model="doneList" group="tasks" :animation="150" ghost-class="ghost"
+                    class="space-y-3 min-h-[200px] p-3 bg-emerald-950/20 border border-emerald-800/30 rounded-2xl">
+                    <div v-for="task in doneList" :key="task.id"
+                        class="group p-4 bg-glass border border-glass rounded-xl hover:border-text-secondary/30 transition-all opacity-70 cursor-grab active:cursor-grabbing">
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-500 line-through">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -325,16 +340,16 @@
                             </div>
                         </div>
                         <p v-if="task.description" class="text-xs text-slate-500 mb-2 line-clamp-2">{{ task.description
-                        }}</p>
+                            }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                             :class="getCategoryInfo(task.category)?.color">
                             {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
                         </span>
                     </div>
-                    <p v-if="doneTasks.length === 0" class="text-center py-8 text-emerald-700 text-sm">Completed tasks
-                        appear here</p>
-                </div>
+                </VueDraggable>
+                <p v-if="doneTasks.length === 0" class="text-center py-8 text-emerald-700 text-sm">Completed tasks
+                    appear here</p>
             </div>
         </div>
     </div>
@@ -349,6 +364,10 @@ import { useCurrentUser, useCollection, useFirestore } from 'vuefire'
 import { collection, query, where } from 'firebase/firestore'
 import type { Task } from '~/types'
 
+import { VueDraggable } from 'vue-draggable-plus'
+import type { SortableEvent } from 'sortablejs'
+
+// ... existing imports ...
 const user = useCurrentUser()
 const db = useFirestore()
 const store = useTasksStore()
@@ -423,6 +442,11 @@ const filteredListTasks = computed(() => {
             return (a.focusOrder || 0) - (b.focusOrder || 0)
         }
 
+        // Within others, sort by rank if available, else date
+        const aRank = a.rank ?? 0
+        const bRank = b.rank ?? 0
+        if (aRank !== bRank) return aRank - bRank
+
         // Then by creation date
         return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
     })
@@ -433,12 +457,12 @@ const filteredListTasks = computed(() => {
 })
 
 // Kanban columns
-const backlogTasks = computed(() => tasks.value?.filter(t => t.status === 'backlog') || [])
+const backlogTasks = computed(() => (tasks.value?.filter(t => t.status === 'backlog') || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
 const focusTasks = computed(() =>
     (tasks.value?.filter(t => t.status === 'focus' && t.focusDate === today) || [])
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))
 )
-const doingTasks = computed(() => tasks.value?.filter(t => t.status === 'doing') || [])
+const doingTasks = computed(() => (tasks.value?.filter(t => t.status === 'doing') || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
 const doneTasks = computed(() =>
     (tasks.value?.filter(t => t.status === 'done') || [])
         .sort((a, b) => (b.completedAt?.seconds || 0) - (a.completedAt?.seconds || 0))
@@ -446,13 +470,48 @@ const doneTasks = computed(() =>
 )
 const focusCount = computed(() => focusTasks.value.length)
 
+// Draggable Lists
+const backlogList = computed({
+    get: () => backlogTasks.value,
+    set: (val) => store.batchReorderTasks(val, 'backlog')
+})
+
+const focusList = computed({
+    get: () => focusTasks.value,
+    set: (val) => store.batchReorderTasks(val, 'focus')
+})
+
+const doingList = computed({
+    get: () => doingTasks.value,
+    set: (val) => store.batchReorderTasks(val, 'doing')
+})
+
+const doneList = computed({
+    get: () => doneTasks.value,
+    set: (val) => store.batchReorderTasks(val, 'done')
+})
+
+const checkFocusLimit = (evt: any) => {
+    // If dragging to focus column (which is wrapped in specific class or we can check list length)
+    // Check if target has 6 items?
+    // This is tricky referencing the computed from here inside the sortable callback context sometimes.
+    // For now allow, if > 6, store might act weird or just allow 7th item until refresh.
+    // Better to strict limit:
+    if (evt.to.classList.contains('ring-1') && focusTasks.value.length >= 6) { // Focus col has ring-1
+        // Only allow if sorting within same list
+        if (evt.from === evt.to) return true
+        return false
+    }
+    return true
+}
+
 // Actions
 const addTask = async () => {
     if (!newTaskTitle.value.trim()) return
-    
+
     let okrId: string | undefined
     let krId: string | undefined
-    
+
     if (newTaskOKRLink.value) {
         const [oid, kid] = newTaskOKRLink.value.split('|')
         okrId = oid
@@ -530,5 +589,11 @@ const handleArchive = async (id: string) => {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.ghost {
+    opacity: 0.5;
+    background: rgba(100, 116, 139, 0.2);
+    border: 1px dashed rgba(148, 163, 184, 0.5);
 }
 </style>

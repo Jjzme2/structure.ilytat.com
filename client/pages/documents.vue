@@ -116,17 +116,17 @@
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <a :href="getPreviewUrl(doc.key)" target="_blank" class="p-2 text-slate-400 hover:text-indigo-400 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="View Document">
+                                <button @click="openDocument(doc.key, true)" class="p-2 text-slate-400 hover:text-indigo-400 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="View Document">
                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                </a>
-                                <a :href="getDownloadUrl(doc.key)" target="_blank" class="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="Download">
+                                </button>
+                                <button @click="openDocument(doc.key, false)" class="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="Download">
                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </div>
                         <div class="mt-2 pt-2 border-t border-slate-800/50 flex justify-between items-center text-[10px] text-slate-600 font-mono uppercase tracking-wider">
@@ -208,8 +208,26 @@ const store = useNotesStore()
 const { documents, loadingDocs, fetchDocuments, getDownloadUrl, getPreviewUrl } = useR2()
 
 onMounted(() => {
-  fetchDocuments()
+  if (user.value) {
+      fetchDocuments()
+  }
 })
+
+watch(user, (u) => {
+    if (u) fetchDocuments()
+})
+
+const openDocument = async (key: string, isPreview: boolean = false) => {
+    try {
+        const url = isPreview ? await getPreviewUrl(key) : await getDownloadUrl(key)
+        if (url) {
+            window.open(url, '_blank')
+        }
+    } catch (e) {
+        console.error('Failed to open document', e)
+        alert('Failed to load document. Please try again.')
+    }
+}
 
 const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 B'
@@ -277,10 +295,7 @@ const categorizedDocuments = computed(() => {
         }
     })
 
-    // Remove Unsorted if empty and other groups exist (optional, but keeps it clean)
-    // if (groups['Unsorted'].length === 0 && Object.keys(groups).length > 1) {
-    //     delete groups['Unsorted']
-    // }
+
 
     return groups
 })

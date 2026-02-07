@@ -17,8 +17,9 @@
         </div>
         <div class="flex items-center gap-4">
           <div class="text-right hidden sm:block">
-            <div class="text-xs text-slate-500 uppercase tracking-widest">Operator</div>
-            <div class="text-sm font-bold text-white">{{ user?.displayName || 'Unknown' }}</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest">{{ user?.displayName ||
+              user?.email?.split('@')[0] || 'Operator' }}</div>
+            <div class="text-sm font-bold text-white">{{ user?.email }}</div>
           </div>
           <div
             class="text-[10px] md:text-xs font-mono text-emerald-500/80 border border-emerald-500/20 px-2 md:px-3 py-1 rounded-full bg-emerald-500/5">
@@ -41,12 +42,12 @@
             <div class="h-10 bg-slate-800/20 animate-pulse rounded"></div>
             <div class="h-4 bg-slate-800/20 animate-pulse rounded w-1/2"></div>
           </div>
-          
+
           <div v-else class="space-y-6">
             <!-- Greeting & Inspiration -->
             <div v-if="config.showGreeting" class="space-y-1">
               <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter">
-                {{ greeting }}, {{ user?.displayName?.split(' ')[0] || 'Operator' }}.
+                {{ greeting }}, {{ user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Operator' }}.
               </h1>
               <p v-if="config.showInspiration" class="text-sm md:text-base text-emerald-400 font-medium italic">
                 "{{ randomInspiration }}"
@@ -54,42 +55,51 @@
             </div>
 
             <!-- Top Priority Task -->
-            <div v-if="config.showTopTask && topTask" class="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl max-w-2xl relative group overflow-hidden">
+            <div v-if="config.showTopTask && topTask"
+              class="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl max-w-2xl relative group overflow-hidden">
               <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <svg class="w-20 h-20 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                    d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
               <div class="relative z-10">
                 <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center gap-3">
                     <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Primary Objective</span>
+                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Primary
+                      Objective</span>
                   </div>
-                  <div v-if="topTask.okrId" class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                  <div v-if="topTask.okrId"
+                    class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
                     <span class="text-[9px] font-bold text-amber-500 uppercase tracking-tighter">Strategic Impact</span>
                   </div>
                 </div>
                 <h3 class="text-xl font-bold text-white mb-1">{{ topTask.title }}</h3>
-                <p v-if="topTask.description" class="text-sm text-slate-400 mb-4 line-clamp-2 max-w-xl">{{ topTask.description }}</p>
-                
+                <p v-if="topTask.description" class="text-sm text-slate-400 mb-4 line-clamp-2 max-w-xl">{{
+                  topTask.description }}</p>
+
                 <div v-if="topTask.okrId" class="pt-3 border-t border-white/5 flex items-center gap-2">
                   <span class="text-[10px] font-bold text-slate-500 uppercase">Target:</span>
-                  <span class="text-xs font-medium text-slate-300">{{ getLinkedOKRInfo(topTask.okrId, topTask.krId)?.objective }}</span>
+                  <span class="text-xs font-medium text-slate-300">{{ getLinkedOKRInfo(topTask.okrId,
+                    topTask.krId)?.objective }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Daily Quote -->
             <div v-if="config.showQuote && dailyContent">
-              <blockquote class="text-lg md:text-2xl font-bold text-slate-300 leading-tight max-w-4xl italic border-l-2 border-slate-700 pl-4">
+              <blockquote
+                class="text-lg md:text-2xl font-bold text-slate-300 leading-tight max-w-4xl italic border-l-2 border-slate-700 pl-4">
                 "{{ dailyContent.text }}"
-                <footer class="text-[10px] text-slate-600 font-mono mt-2 uppercase tracking-widest">— {{ dailyContent.author || 'Source' }}</footer>
+                <footer class="text-[10px] text-slate-600 font-mono mt-2 uppercase tracking-widest">— {{
+                  dailyContent.author || 'Source' }}</footer>
               </blockquote>
             </div>
 
             <div v-if="!dailyContent && !topTask" class="text-slate-500 italic">
-              System awaiting synchronization. <NuxtLink to="/quotes" class="text-emerald-400 hover:underline">Access data banks.</NuxtLink>
+              System awaiting synchronization. <NuxtLink to="/quotes" class="text-emerald-400 hover:underline">Access
+                data banks.</NuxtLink>
             </div>
           </div>
         </div>
@@ -176,19 +186,23 @@
 
 <script setup lang="ts">
 import { useStrategyStore } from '~/stores/strategy'
-const { 
-  greeting, 
-  todayFormatted, 
-  dailyContent, 
-  fetchDaily, 
-  dailyLoading, 
-  randomInspiration, 
-  topTask, 
-  config 
+import { useCurrentUser } from 'vuefire'
+
+const {
+  greeting,
+  todayFormatted,
+  dailyContent,
+  fetchDaily,
+  dailyLoading,
+  randomInspiration,
+  topTask,
+  config
 } = useBriefing()
 const { activeModules } = useModules()
 const strategyStore = useStrategyStore()
 const user = useCurrentUser()
+
+console.log('Dashboard: useCurrentUser value:', user.value)
 
 const okrs = computed(() => strategyStore.okrs || [])
 

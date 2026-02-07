@@ -99,8 +99,13 @@ export const useDaily = () => {
                 metadata: systemMeta
             }
 
-        } catch (e) {
-            console.error('useDaily: Error fetching consolidated snapshot', e)
+        } catch (e: any) {
+            console.error('useDaily: Error fetching consolidated snapshot')
+            console.error('Code:', e.code)
+            console.error('Message:', e.message)
+            if (e.code === 'permission-denied') {
+                console.warn('Check Firestore Rules for paths: users/UID/daily, tasks, dates, or metadata.')
+            }
         } finally {
             loading.value = false
         }
