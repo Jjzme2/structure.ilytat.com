@@ -50,9 +50,9 @@ service cloud.firestore {
     }
 
     // Metadata Collection (System Config)
-    // Public read access allowed for global system settings
+    // Authenticated read access allowed for global system settings
     match /metadata/{documentId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if false; // Internal/Admin only
     }
 
