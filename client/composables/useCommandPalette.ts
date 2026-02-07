@@ -56,6 +56,7 @@ export const useCommandPalette = () => {
     return {
         isOpen,
         searchQuery,
+        commands,
         open,
         close,
         toggle,

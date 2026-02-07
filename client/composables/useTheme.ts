@@ -150,6 +150,126 @@ export const useTheme = () => {
             class: 'theme-vintage',
             category: 'Classic',
             colors: ['amber', 'brown', 'retro']
+        },
+        arcticFlare: {
+            name: 'Arctic Flare',
+            class: 'theme-arctic-flare',
+            category: 'Glass',
+            colors: ['cyan', 'violet', 'arctic']
+        },
+        solarFlare: {
+            name: 'Solar Flare',
+            class: 'theme-solar-flare',
+            category: 'Glass',
+            colors: ['amber', 'yellow', 'solar']
+        },
+        midnightAurora: {
+            name: 'Midnight Aurora',
+            class: 'theme-midnight-aurora',
+            category: 'Glass',
+            colors: ['green', 'purple', 'aurora']
+        },
+        velvetNebula: {
+            name: 'Velvet Nebula',
+            class: 'theme-velvet-nebula',
+            category: 'Glass',
+            colors: ['violet', 'pink', 'nebula']
+        },
+        goldenHour: {
+            name: 'Golden Hour',
+            class: 'theme-golden-hour',
+            category: 'Glass',
+            colors: ['peach', 'gold', 'sunset']
+        },
+        oceanicAbyss: {
+            name: 'Oceanic Abyss',
+            class: 'theme-oceanic-abyss',
+            category: 'Glass',
+            colors: ['teal', 'navy', 'marine']
+        },
+        forestMist: {
+            name: 'Forest Mist',
+            class: 'theme-forest-mist',
+            category: 'Glass',
+            colors: ['emerald', 'slate', 'mist']
+        },
+        rubyHorizon: {
+            name: 'Ruby Horizon',
+            class: 'theme-ruby-horizon',
+            category: 'Glass',
+            colors: ['red', 'pink', 'horizon']
+        },
+        silverStream: {
+            name: 'Silver Stream',
+            class: 'theme-silver-stream',
+            category: 'Glass',
+            colors: ['grey', 'blue', 'metal']
+        },
+        neonDrift: {
+            name: 'Neon Drift',
+            class: 'theme-neon-drift',
+            category: 'Glass',
+            colors: ['purple', 'cyan', 'neon']
+        },
+        neonDriftV2: {
+            name: 'Neon Drift V2',
+            class: 'theme-neon-drift-v2',
+            category: 'Glass',
+            colors: ['purple', 'cyan', 'vibrant']
+        },
+        crimsonTide: {
+            name: 'Crimson Tide',
+            class: 'theme-crimson-tide',
+            category: 'Abstract',
+            colors: ['red', 'black', 'deep']
+        },
+        azureGlaze: {
+            name: 'Azure Glaze',
+            class: 'theme-azure-glaze',
+            category: 'Glass',
+            colors: ['blue', 'sky', 'soft']
+        },
+        emeraldGlow: {
+            name: 'Emerald Glow',
+            class: 'theme-emerald-glow',
+            category: 'Glass',
+            colors: ['green', 'emerald', 'vibrant']
+        },
+        sunsetPeak: {
+            name: 'Sunset Peak',
+            class: 'theme-sunset-peak',
+            category: 'Abstract',
+            colors: ['orange', 'magenta', 'warm']
+        },
+        midnightSpark: {
+            name: 'Midnight Spark',
+            class: 'theme-midnight-spark',
+            category: 'Abstract',
+            colors: ['navy', 'silver', 'sparkle']
+        },
+        violetRay: {
+            name: 'Violet Ray',
+            class: 'theme-violet-ray',
+            category: 'Glass',
+            colors: ['violet', 'purple', 'intense']
+        },
+        cyberPunk: {
+            name: 'Cyber Punk',
+            class: 'theme-cyber-punk',
+            category: 'Abstract',
+            colors: ['yellow', 'pink', 'neon']
+        },
+        arcticFrost: {
+            name: 'Arctic Frost',
+            class: 'theme-arctic-frost',
+            category: 'Glass',
+            colors: ['white', 'blue', 'ice']
+        },
+        deepForest: {
+            name: 'Deep Forest',
+            class: 'theme-deep-forest',
+            category: 'Abstract',
+            colors: ['green', 'moss', 'dark']
         }
     }
 

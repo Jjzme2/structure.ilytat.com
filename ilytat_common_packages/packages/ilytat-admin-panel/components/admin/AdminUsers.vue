@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useCurrentUser, getCurrentUser } from 'vuefire'
 
 const audit = useActivityLog()
+const { success, error, info } = useToast()
 
 interface User {
     uid: string
@@ -11,6 +12,8 @@ interface User {
     role: string
     lastSignInTime: string
     creationTime: string
+    disabled: boolean
+    forcePasswordReset: boolean
 }
 
 const users = ref<User[]>([])
@@ -52,6 +55,54 @@ const inviteUser = async () => {
         console.error('Failed to invite user', e)
     } finally {
         inviting.value = false
+    }
+}
+
+const performUserAction = async (uid: string, email: string, action: 'send-reset-email' | 'force-reset' | 'clear-reset-flag') => {
+    try {
+        const user = await getCurrentUser()
+        const token = await user?.getIdToken()
+        const result = await $fetch<{ success: boolean; message: string; link?: string }>('/api/admin/user-action', {
+            method: 'POST',
+            body: { uid, action },
+            headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (result.success) {
+            await audit.log(`User Action: ${action}`, 'admin-users', { targetUid: uid, targetEmail: email })
+            success(result.message)
+            fetchUsers() // Refresh list
+            if (result.link && action === 'send-reset-email') {
+                console.log(`Reset link for ${email}: ${result.link}`)
+            }
+        }
+    } catch (e: any) {
+        error(`Action failed: ${e.message}`)
+    }
+}
+
+const toggleUserStatus = async (userObj: User) => {
+    const newStatus = !userObj.disabled
+    const actionLabel = newStatus ? 'Disable' : 'Enable'
+    
+    if (!confirm(`Are you sure you want to ${actionLabel} ${userObj.email}?`)) return
+
+    try {
+        const user = await getCurrentUser()
+        const token = await user?.getIdToken()
+        const result = await $fetch<{ success: boolean; message: string }>('/api/admin/user-status', {
+            method: 'POST',
+            body: { uid: userObj.uid, disabled: newStatus },
+            headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (result.success) {
+            await audit.log(`User ${actionLabel}d`, 'admin-users', { targetUid: userObj.uid, targetEmail: userObj.email })
+            success(result.message)
+            fetchUsers() // Refresh list
+        }
+    } catch (e: any) {
+        error(`Status update failed: ${e.message}`)
     }
 }
 
@@ -116,7 +167,11 @@ onMounted(fetchUsers)
                                         {{ user.email?.[0]?.toUpperCase() || '?' }}
                                     </div>
                                     <div>
-                                        <div class="font-bold text-white">{{ user.email }}</div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="font-bold text-white">{{ user.email }}</div>
+                                            <span v-if="user.disabled" class="text-[8px] bg-rose-500/20 text-rose-500 px-1 rounded border border-rose-500/30 uppercase">Disabled</span>
+                                            <span v-if="user.forcePasswordReset" class="text-[8px] bg-amber-500/20 text-amber-500 px-1 rounded border border-amber-500/30 uppercase">Reset Req'd</span>
+                                        </div>
                                         <div class="text-[10px] text-slate-500 font-mono">{{ user.uid }}</div>
                                     </div>
                                 </div>
@@ -130,10 +185,31 @@ onMounted(fetchUsers)
                             <td class="px-6 py-4 text-xs text-slate-400 font-mono">{{ formatDate(user.lastSignInTime) }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button
-                                    class="text-slate-500 hover:text-rose-400 transition-colors text-xs uppercase font-bold tracking-widest">
-                                    Deactivate
-                                </button>
+                                <div class="flex items-center justify-end gap-2">
+                                    <button @click="performUserAction(user.uid, user.email, 'send-reset-email')"
+                                        title="Send Reset Email"
+                                        class="p-1.5 text-slate-500 hover:text-amber-500 transition-colors tooltip">
+                                        📧
+                                    </button>
+                                    <button v-if="user.forcePasswordReset" @click="performUserAction(user.uid, user.email, 'clear-reset-flag')"
+                                        title="Clear Reset Flag"
+                                        class="p-1.5 text-emerald-500 hover:text-emerald-400 transition-colors tooltip">
+                                        ✅
+                                    </button>
+                                    <button v-else @click="performUserAction(user.uid, user.email, 'force-reset')"
+                                        title="Force Password Reset"
+                                        class="p-1.5 text-slate-500 hover:text-rose-400 transition-colors tooltip">
+                                        🔄
+                                    </button>
+                                    <button @click="toggleUserStatus(user)"
+                                        :title="user.disabled ? 'Enable Account' : 'Disable Account'"
+                                        class="px-3 py-1 text-[10px] font-bold uppercase tracking-widest border rounded transition-all"
+                                        :class="user.disabled 
+                                            ? 'text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10' 
+                                            : 'text-slate-500 border-slate-700 hover:text-rose-400 hover:border-rose-400/50'">
+                                        {{ user.disabled ? 'Enable' : 'Disable' }}
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

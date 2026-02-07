@@ -33,7 +33,9 @@ export default defineEventHandler(async (event) => {
             photoURL: user.photoURL,
             role: (user.customClaims?.role as string) || 'member',
             lastSignInTime: user.metadata.lastSignInTime,
-            creationTime: user.metadata.creationTime
+            creationTime: user.metadata.creationTime,
+            disabled: user.disabled,
+            forcePasswordReset: !!user.customClaims?.forcePasswordReset
         }))
 
     } catch (e: any) {

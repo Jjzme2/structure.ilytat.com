@@ -180,6 +180,7 @@ export interface CommandItem {
     section: 'Navigation' | 'Actions' | 'Tasks' | 'Search' | 'Quick Links' | 'Apps' | 'System' | 'Themes'
     shortcut?: string[]
     external?: boolean
+    adminOnly?: boolean
 }
 
 // Task Groups (Templates)

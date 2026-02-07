@@ -25,3 +25,6 @@ logs
 
 # Migration script
 server/api/migration/*
+
+# Development task list
+.dev/*

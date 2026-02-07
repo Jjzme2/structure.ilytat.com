@@ -49,8 +49,18 @@ export default defineNuxtPlugin((nuxtApp) => {
         label: 'Go to Knowledge',
         icon: '📝',
         section: 'Apps',
-        keywords: ['notes', 'docs', 'wiki'],
-        action: () => router.push('/notes')
+        keywords: ['notes', 'docs', 'wiki', 'intelligence'],
+        action: () => router.push('/intelligence')
+    })
+
+    register({
+        id: 'nav-admin',
+        label: 'Go to Admin Panel',
+        icon: '🛡️',
+        section: 'System',
+        keywords: ['admin', 'panel', 'management', 'settings'],
+        action: () => router.push('/admin'),
+        adminOnly: true
     })
 
     register({
@@ -100,6 +110,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     // External Links
     externalLinks.forEach((link: { label: string; icon: string; path: string }) => { // Added explicit type casting
+        const isAdminLink = ['Firebase Console', 'Cloudflare Dashboard', 'EmailJS Dashboard', 'GitHub Repo'].includes(link.label)
         register({
             id: `ext-${link.label.toLowerCase().replace(/\s+/g, '-')}`,
             label: link.label,
@@ -110,7 +121,8 @@ export default defineNuxtPlugin((nuxtApp) => {
             section: 'Quick Links', // Changed back to Quick Links
             keywords: ['external', 'link', 'url', link.label.toLowerCase()],
             action: () => window.open(link.path, '_blank'),
-            external: true
+            external: true,
+            adminOnly: isAdminLink
         })
     })
 

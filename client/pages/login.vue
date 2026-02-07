@@ -7,14 +7,14 @@
       <div class="absolute top-[40%] -right-[10%] w-[40%] h-[40%] bg-cyan-600/10 rounded-full blur-[100px]"></div>
     </div>
 
-    <div
+    <div v-ilytat-animate="'entrance'"
       class="max-w-md w-full space-y-8 relative z-10 p-8 bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl">
       <div>
-        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-white">
+        <h2 v-ilytat-animate="'entrance'" class="mt-6 text-center text-3xl font-bold tracking-tight text-white">
           Access <span
             class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">ILYTAT</span>
         </h2>
-        <p class="mt-2 text-center text-sm text-slate-400">
+        <p v-ilytat-animate="'entrance'" class="mt-2 text-center text-sm text-slate-400">
           Personal organization, redefined.
         </p>
       </div>

@@ -2,6 +2,9 @@
   "name": "hq-ilytat-com",
   "type": "module",
   "private": true,
+  "workspaces": [
+    "ilytat_common_packages/packages/*"
+  ],
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",

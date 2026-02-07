@@ -16,6 +16,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                 },
             })
         }
+
+        // Check for Force Password Reset claim
+        const idTokenResult = await user.getIdTokenResult()
+        if (idTokenResult.claims.forcePasswordReset && to.path !== '/forgot-password' && to.path !== '/login') {
+            console.warn('[Auth] Mandatory Password Reset Detected')
+            return navigateTo('/forgot-password')
+        }
     } catch (e) {
         console.error('Auth Middleware Error:', e)
     }
