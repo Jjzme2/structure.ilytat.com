@@ -19,12 +19,21 @@ const closeMenu = (e: MouseEvent) => {
     }
 }
 
+// Close menu on Escape key
+const closeOnEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+        isOpen.value = false
+    }
+}
+
 onMounted(() => {
     document.addEventListener('click', closeMenu)
+    document.addEventListener('keydown', closeOnEscape)
 })
 
 onUnmounted(() => {
     document.removeEventListener('click', closeMenu)
+    document.removeEventListener('keydown', closeOnEscape)
 })
 </script>
 
@@ -32,8 +41,11 @@ onUnmounted(() => {
     <div ref="menuRef" class="relative inline-block text-left">
         <div>
             <button @click="isOpen = !isOpen"
+                aria-label="Quick Launch"
+                :aria-expanded="isOpen"
                 class="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium text-muted hover:text-text-primary glass-pill transition-all whitespace-nowrap group">
                 <div
+                    aria-hidden="true"
                     class="h-5 w-5 rounded-md bg-gradient-to-tr from-accent-primary to-accent-secondary flex items-center justify-center text-white/90 shadow-lg group-hover:scale-110 transition-transform">
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -42,7 +54,7 @@ onUnmounted(() => {
                 </div>
                 <span class="hidden md:block font-bold">Quick Launch</span>
                 <svg class="w-4 h-4 opacity-50 transition-transform duration-300" :class="isOpen ? 'rotate-180' : ''"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
@@ -60,23 +72,25 @@ onUnmounted(() => {
                             {{ profile?.role === 'admin' ? 'Command Center' : 'Shortcuts' }}
                         </p>
                     </div>
-                    <div v-for="item in menuItems" :key="item.path">
-                        <NuxtLink :to="item.path" :target="item.newTab ? '_blank' : undefined" @click="isOpen = false"
-                            class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all text-muted hover:text-text-primary hover:bg-white/5"
-                            active-class="bg-accent-primary/10 text-accent-primary">
-                            <!-- Icon Placeholder -->
-                            <div class="w-5 h-5 flex items-center justify-center opacity-70 group-hover:opacity-100">
-                                <span v-if="item.icon === 'check-circle'">✓</span>
-                                <span v-else-if="item.icon === 'calendar'">📅</span>
-                                <span v-else-if="item.icon === 'plus-circle'">+</span>
-                                <span v-else-if="item.icon === 'view-grid'">⊞</span>
-                                <span v-else-if="item.icon === 'users'">👥</span>
-                                <span v-else-if="item.icon === 'cog'">⚙️</span>
-                                <span v-else>•</span>
-                            </div>
-                            {{ item.label }}
-                        </NuxtLink>
-                    </div>
+                    <ul role="list" aria-label="Quick Launch Options">
+                        <li v-for="item in menuItems" :key="item.path">
+                            <NuxtLink :to="item.path" :target="item.newTab ? '_blank' : undefined" @click="isOpen = false"
+                                class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all text-muted hover:text-text-primary hover:bg-white/5"
+                                active-class="bg-accent-primary/10 text-accent-primary">
+                                <!-- Icon Placeholder -->
+                                <div class="w-5 h-5 flex items-center justify-center opacity-70 group-hover:opacity-100" aria-hidden="true">
+                                    <span v-if="item.icon === 'check-circle'">✓</span>
+                                    <span v-else-if="item.icon === 'calendar'">📅</span>
+                                    <span v-else-if="item.icon === 'plus-circle'">+</span>
+                                    <span v-else-if="item.icon === 'view-grid'">⊞</span>
+                                    <span v-else-if="item.icon === 'users'">👥</span>
+                                    <span v-else-if="item.icon === 'cog'">⚙️</span>
+                                    <span v-else>•</span>
+                                </div>
+                                {{ item.label }}
+                            </NuxtLink>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </transition>
