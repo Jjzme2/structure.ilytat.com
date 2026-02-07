@@ -40,12 +40,6 @@ export default defineEventHandler(async (event) => {
         }
 
         const disposition = isInline ? 'inline' : 'attachment'
-        console.log('--- DEBUG DOWNLOAD ---')
-        console.log('Key:', key)
-        console.log('Is Inline:', isInline)
-        console.log('Initial Type:', response.ContentType)
-        console.log('Use Type:', contentType)
-        console.log('Disposition:', disposition)
 
         // Handle Content-Disposition
         // If inline is requested, we force inline. Otherwise we default to attachment to ensure download.
