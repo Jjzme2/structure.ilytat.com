@@ -27,8 +27,27 @@ export const useDaily = () => {
 
         try {
             const date = todayStr.value
+
+            // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
-            const dailySnap = await getDoc(dailyRef)
+            const tasksQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', user.value.uid)
+            )
+            const datesQuery = query(
+                collection(db, 'dates'),
+                where('userId', '==', user.value.uid),
+                where('date', '==', date)
+            )
+            const metaRef = doc(db, 'metadata', 'system')
+
+            // Fetch everything in parallel
+            const [dailySnap, tasksSnap, datesSnap, metaSnap] = await Promise.all([
+                getDoc(dailyRef),
+                getDocs(tasksQuery),
+                getDocs(datesQuery),
+                getDoc(metaRef)
+            ])
 
             let selectedQuote: Quote | null = null
 
@@ -62,30 +81,17 @@ export const useDaily = () => {
                 }
             }
 
-            // 2. Fetch Tasks Summary
-            const tasksQuery = query(
-                collection(db, 'tasks'),
-                where('userId', '==', user.value.uid)
-            )
-            const tasksSnap = await getDocs(tasksQuery)
+            // 2. Process Tasks Summary
             const todayTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
 
             const focusTasks = todayTasks.filter(t => t.status === 'focus' && t.focusDate === date)
                 .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))
             const doneToday = todayTasks.filter(t => t.status === 'done' && t.completedAt) // Simple filter for now
 
-            // 3. Fetch Today's Events
-            const datesQuery = query(
-                collection(db, 'dates'),
-                where('userId', '==', user.value.uid),
-                where('date', '==', date)
-            )
-            const datesSnap = await getDocs(datesQuery)
+            // 3. Process Today's Events
             const todayEvents = datesSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ImportantDate[]
 
-            // 4. Fetch Metadata
-            const metaRef = doc(db, 'metadata', 'system') // Example global metadata
-            const metaSnap = await getDoc(metaRef)
+            // 4. Process Metadata
             const systemMeta = metaSnap.exists() ? metaSnap.data() : null
 
             dailySnapshot.value = {
