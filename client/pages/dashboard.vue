@@ -202,7 +202,17 @@ const { activeModules } = useModules()
 const strategyStore = useStrategyStore()
 const user = useCurrentUser()
 
-console.log('Dashboard: useCurrentUser value:', user.value)
+onMounted(() => {
+  if (import.meta.dev) {
+    console.log('[Dashboard] Initial user state:', user.value)
+  }
+})
+
+watch(user, (newUser) => {
+  if (newUser && import.meta.dev) {
+    console.log('[Dashboard] User identified:', newUser.email)
+  }
+})
 
 const okrs = computed(() => strategyStore.okrs || [])
 
