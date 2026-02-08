@@ -22,3 +22,9 @@ logs
 .env
 .env.*
 !.env.example
+
+# Migration script
+server/api/migration/*
+
+# Development task list
+.dev/*

@@ -84,10 +84,52 @@
 <script setup lang="ts">
 import { useCommandPalette } from '~/composables/useCommandPalette'
 import type { CommandItem } from '~/types'
+import { useCurrentUser } from 'vuefire'
 
-const { isOpen, searchQuery, close, filteredCommands, groupedCommands } = useCommandPalette()
+const { isOpen, searchQuery, close, commands, groupedCommands: allGroups } = useCommandPalette()
 const inputRef = ref<HTMLInputElement | null>(null)
 const activeId = ref<string | null>(null)
+
+const user = useCurrentUser()
+const isAdmin = ref(false)
+
+watch(user, async (newUser) => {
+    if (newUser) {
+        const token = await newUser.getIdTokenResult()
+        isAdmin.value = token.claims.role === 'admin' || token.claims.admin === true
+    } else {
+        isAdmin.value = false
+    }
+}, { immediate: true })
+
+const filteredCommands = computed(() => {
+    let items = commands.value
+    
+    // Filter by admin access
+    if (!isAdmin.value) {
+        items = items.filter((cmd: CommandItem) => !cmd.adminOnly)
+    }
+
+    if (!searchQuery.value) return items
+
+    const query = searchQuery.value.toLowerCase()
+    return items.filter((cmd: CommandItem) =>
+        cmd.label.toLowerCase().includes(query) ||
+        cmd.keywords.some((k: string) => k.toLowerCase().includes(query))
+    )
+})
+
+// Group commands by section
+const groupedCommands = computed(() => {
+    const groups: Record<string, CommandItem[]> = {}
+    filteredCommands.value.forEach((cmd: CommandItem) => {
+        if (!groups[cmd.section]) {
+            groups[cmd.section] = []
+        }
+        groups[cmd.section]?.push(cmd)
+    })
+    return groups
+})
 
 // Auto-focus input when opened
 watch(isOpen, async (val) => {

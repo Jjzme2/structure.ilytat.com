@@ -2,106 +2,90 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check if user is authenticated
+    // --- Helper Functions ---
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Helper function to check if user is accessing their own data
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Users Collection
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.admin == true ||
+        request.auth.token.email == 'zettler.jj@ilytat.com'
+      );
+    }
+
+    function isTenantMember(tenantId) {
+      // Allow if token has specific tenantId claim OR if user is global admin or specific email
+      return isAuthenticated() && (
+        request.auth.token.tenantId == tenantId || 
+        request.auth.token.role == 'admin' ||
+        request.auth.token.admin == true ||
+        request.auth.token.email == 'jj@ilytat.com' || // Kept for safety
+        request.auth.token.email == 'admin@ilytat.com' || // Kept for safety
+        request.auth.token.email == 'zettler.jj@ilytat.com'
+      );
+    }
+
+    // --- Multi-Tenant Structure ---
+
+    // Company Data
+    match /companies/{tenantId} {
+      allow read: if isTenantMember(tenantId);
+      allow write: if isTenantMember(tenantId); // Refine this later for granular perms
+
+      match /tasks/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /notes/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /briefings/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /transactions/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /okrs/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /assets/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /subscriptions/{document=**} { allow read, write: if isTenantMember(tenantId); }
+      match /projects/{document=**} { allow read, write: if isTenantMember(tenantId); }
+    }
+
+    // Personal Data
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-
-      // User Preferences Subcollection
-      match /preferences/{preferenceId} {
-        allow read, write: if isOwner(userId);
-      }
-
-      // User Inbox Subcollection
-      match /inbox/{messageId} {
-        allow read, write: if isOwner(userId);
-      }
-
-      // User Daily Snapshots (Briefing)
-      match /daily/{date} {
-        allow read, write: if isOwner(userId);
-      }
-    }
-
-    // Tasks Collection
-    match /tasks/{taskId} {
-      // Allow reading/writing if the resource belongs to the user
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
       
-      // Allow creating if the access is authenticated and the new resource belongs to the user
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Allow access to all subcollections
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
-    // Quotes Collection (Shared Library)
-    // Public read access allowed for universal inspiration
-    match /quotes/{quoteId} {
-      allow read: if true;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-    }
+    // --- Shared / Public / Root Collections (Legacy or System) ---
 
     // Metadata Collection (System Config)
-    // Public read access allowed for global system settings
+    // Authenticated read access allowed for global system settings
     match /metadata/{documentId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if false; // Internal/Admin only
     }
 
-    // Notes Collection
-    match /notes/{noteId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    // Quotes - Keep public read for now
+    match /quotes/{quoteId} {
+      allow read: if true;
+      allow write: if isAuthenticated(); // Restrict?
     }
 
-    // Dates Collection
+    // Root Collections (Legacy Support - Optional)
+    // You might want to remove these after full migration
+    match /tasks/{taskId} {
+      allow read: if isOwner(resource.data.userId); // Read only if existing resource is mine
+      allow create: if isOwner(request.resource.data.userId); // Create only if I set myself as owner
+      allow update, delete: if isOwner(resource.data.userId); // Update only if existing resource is mine
+    }
     match /dates/{dateId} {
-      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.isPublic == true;
-      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
     }
-
-    // Activities Log
-    match /activities/{activityId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Subscriptions Collection
-    match /subscriptions/{subscriptionId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Assets Collection
-    match /assets/{assetId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Strategy / OKRs Collection
-    match /okrs/{okrId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Ledger / Transactions Collection
-    match /transactions/{transactionId} {
-      allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Default deny
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    // ... other legacy roots can be matched generic or removed
+    
   }
 }

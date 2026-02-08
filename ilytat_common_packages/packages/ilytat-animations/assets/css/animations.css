@@ -1,0 +1,136 @@
+/* Base Animation Utilities */
+.ilytat-animate-active {
+    animation-fill-mode: both;
+}
+
+/* Group: Entrances */
+
+/* Fade In (Common) */
+@keyframes ilytat-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-ilytat-fade-in {
+    animation-name: ilytat-fade-in;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Slide In Right (Uncommon) */
+@keyframes ilytat-slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-ilytat-slide-in-right {
+    animation-name: ilytat-slide-in-right;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Bounce In (Rare) */
+@keyframes ilytat-bounce-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-ilytat-bounce-in {
+    animation-name: ilytat-bounce-in;
+    animation-duration: 0.8s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Glitch Entrance (Legendary-Rare) */
+@keyframes ilytat-glitch-entrance {
+    0% {
+        opacity: 0;
+        transform: translate(0);
+        clip-path: inset(0 0 0 0);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translate(-5px, 2px);
+        clip-path: inset(10% 0 30% 0);
+    }
+
+    40% {
+        transform: translate(5px, -2px);
+        clip-path: inset(40% 0 10% 0);
+    }
+
+    60% {
+        transform: translate(-2px, 5px);
+        clip-path: inset(20% 0 60% 0);
+    }
+
+    80% {
+        transform: translate(2px, -5px);
+        clip-path: inset(70% 0 5% 0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+.animate-ilytat-glitch-entrance {
+    animation-name: ilytat-glitch-entrance;
+    animation-duration: 0.4s;
+    animation-timing-function: steps(2);
+}
+
+/* Pulsing (Idle/Attention) */
+@keyframes ilytat-pulse-glow {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px 0 rgba(16, 185, 129, 0.2);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.animate-ilytat-pulse-glow {
+    animation-name: ilytat-pulse-glow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}

@@ -13,14 +13,26 @@ export const useNotesStore = defineStore('notes', () => {
     // OR we define actions here.
 
     // Actually, to satisfy the specific "Pinia" requirement effectively with Vuefire:
+    const scope = useTenant().scope
+    const tenantId = useTenant().tenantId
+
+    // Helper to get the correct collection path
+    const collectionPath = computed(() => {
+        if (!user.value) return 'notes' // Fallback
+        return scope.value === 'personal'
+            ? `users/${user.value.uid}/notes`
+            : `companies/${tenantId.value}/notes`
+    })
+
+    // Helper for components to get the collection ref
     const getNotesCollection = () => {
         if (!user.value) return null
-        return collection(db, 'notes')
+        return collection(db, collectionPath.value)
     }
 
     const addNote = async (title: string, content: string) => {
         if (!user.value) return
-        await addDoc(collection(db, 'notes'), {
+        await addDoc(collection(db, collectionPath.value), {
             title,
             content,
             userId: user.value.uid,
@@ -31,18 +43,21 @@ export const useNotesStore = defineStore('notes', () => {
 
     const updateNote = async (id: string, data: Partial<Note>) => {
         if (!user.value) return
-        const docRef = doc(db, 'notes', id)
+        const docRef = doc(db, collectionPath.value, id)
         await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
     }
 
     const deleteNote = async (id: string) => {
         if (!user.value) return
-        await deleteDoc(doc(db, 'notes', id))
+        await deleteDoc(doc(db, collectionPath.value, id))
     }
 
     return {
+        scope,
+        collectionPath,
         addNote,
         updateNote,
-        deleteNote
+        deleteNote,
+        getNotesCollection
     }
 })

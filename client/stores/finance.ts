@@ -1,16 +1,33 @@
 import { defineStore } from 'pinia'
-import { collection, addDoc, deleteDoc, doc, query, where, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, deleteDoc, doc, query, where, serverTimestamp, orderBy } from 'firebase/firestore'
 import { useCurrentUser, useCollection, useFirestore } from 'vuefire'
 import type { Transaction } from '~/types'
+import { useTenant } from '~/composables/useTenant'
 
 export const useFinanceStore = defineStore('finance', () => {
     const user = useCurrentUser()
     const db = useFirestore()
 
+    const scope = useTenant().scope
+    const tenantId = useTenant().tenantId
+
+    // Helper to get the correct collection path
+    const collectionPath = computed(() => {
+        if (!user.value) return 'transactions' // Fallback
+        return scope.value === 'personal'
+            ? `users/${user.value.uid}/transactions`
+            : `companies/${tenantId.value}/transactions`
+    })
+
     // Transactions
     const transactionsQuery = computed(() => {
         if (!user.value) return null
-        return query(collection(db, 'transactions'), where('userId', '==', user.value.uid))
+        const coll = collection(db, collectionPath.value)
+
+        // If personal, we naturally only see our own doc path, but userId check is fine too
+        // If company, we might want to see all? Or just ours?
+        // Let's assume company view shows everything for now.
+        return query(coll, orderBy('date', 'desc'))
     })
     const transactions = useCollection<Transaction>(transactionsQuery)
 
@@ -35,7 +52,7 @@ export const useFinanceStore = defineStore('finance', () => {
     // Actions
     const addTransaction = async (data: Omit<Transaction, 'id' | 'userId'>) => {
         if (!user.value) return
-        await addDoc(collection(db, 'transactions'), {
+        await addDoc(collection(db, collectionPath.value), {
             ...data,
             userId: user.value.uid,
             createdAt: serverTimestamp()
@@ -44,10 +61,12 @@ export const useFinanceStore = defineStore('finance', () => {
 
     const deleteTransaction = async (id: string) => {
         if (!user.value) return
-        await deleteDoc(doc(db, 'transactions', id))
+        await deleteDoc(doc(db, collectionPath.value, id))
     }
 
     return {
+        scope,
+        collectionPath,
         transactions,
         monthlyStats,
         addTransaction,

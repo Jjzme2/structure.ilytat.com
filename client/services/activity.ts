@@ -56,6 +56,30 @@ class ActivityService {
             return []
         }
     }
+
+    /**
+     * Fetch recent activity across all users (Admin only)
+     */
+    async fetchAllRecent(count: number = 50): Promise<ActivityItem[]> {
+        if (!this.db) return []
+
+        try {
+            const q = query(
+                collection(this.db, 'activities'),
+                orderBy('timestamp', 'desc'),
+                limit(count)
+            )
+
+            const snapshot = await getDocs(q)
+            return snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as ActivityItem))
+        } catch (e) {
+            console.error('ActivityService: Failed to fetch audit logs', e)
+            return []
+        }
+    }
 }
 
 export const useActivityService = (db: Firestore) => new ActivityService(db)

@@ -14,7 +14,7 @@
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 py-12 min-h-screen flex flex-col">
       <!-- Header -->
-      <header class="flex justify-between items-center mb-16 animate-fade-in-down">
+      <header v-ilytat-animate="'entrance'" class="flex justify-between items-center mb-16">
         <div class="flex items-center gap-4">
           <div
             class="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.2)]">
@@ -35,7 +35,7 @@
 
         <!-- Left Column: Hero & Notice -->
         <div class="lg:col-span-7 space-y-10">
-          <div class="space-y-4 animate-fade-in-up">
+          <div v-ilytat-animate="'entrance'" class="space-y-4">
             <div
               class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-[10px] font-bold tracking-widest text-emerald-400 uppercase">
               <span class="relative flex h-2 w-2">
@@ -56,7 +56,7 @@
           </div>
 
           <!-- Security Alert Box -->
-          <div class="animate-fade-in-up delay-200">
+          <div v-ilytat-animate="'entrance'">
             <div
               class="p-6 rounded-2xl bg-emerald-500/5 border-2 border-emerald-500/20 backdrop-blur-xl group relative overflow-hidden">
               <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -86,7 +86,7 @@
           </div>
 
           <!-- Action -->
-          <div class="flex flex-wrap gap-4 animate-fade-in-up delay-400">
+          <div v-ilytat-animate="'entrance'" class="flex flex-wrap gap-4">
             <NuxtLink to="/login"
               class="group relative px-10 py-5 bg-white text-slate-950 font-black text-lg tracking-widest rounded-xl overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
               <span class="relative z-10 uppercase">Access Workspace</span>
@@ -103,7 +103,7 @@
         </div>
 
         <!-- Right Column: News & Intel -->
-        <div class="lg:col-span-5 space-y-8 animate-fade-in-up delay-600">
+        <div v-ilytat-animate="'entrance'" class="lg:col-span-5 space-y-8">
 
           <!-- News Module -->
           <section id="updates"
@@ -210,27 +210,6 @@ const scrollToUpdates = () => {
 <style scoped>
 .animate-slow-zoom {
   animation: slowZoom 30s infinite alternate ease-in-out;
-}
-
-.animate-fade-in-down {
-  animation: fadeInDown 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fade-in-up {
-  opacity: 0;
-  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
-}
-
-.delay-600 {
-  animation-delay: 0.6s;
 }
 
 @keyframes slowZoom {

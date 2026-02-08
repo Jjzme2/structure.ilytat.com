@@ -377,6 +377,243 @@
     --font-text: var(--font-serif);
 }
 
+.theme-arctic-flare {
+    /* Arctic Flare */
+    --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #581c87 100%);
+    --text-primary: #f0f9ff;
+    --text-secondary: #bae6fd;
+    --accent-primary: #38bdf8;
+    --accent-secondary: #c084fc;
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    --glass-border: rgba(56, 189, 248, 0.3);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-solar-flare {
+    /* Solar Flare */
+    --bg-primary: radial-gradient(circle at center, #78350f 0%, #451a03 100%);
+    --text-primary: #fffbeb;
+    --text-secondary: #fef3c7;
+    --accent-primary: #f59e0b;
+    --accent-secondary: #facc15;
+    --glass-bg: rgba(69, 26, 3, 0.7);
+    --glass-border: rgba(245, 158, 11, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-midnight-aurora {
+    /* Midnight Aurora */
+    --bg-primary: linear-gradient(225deg, #020617 0%, #064e3b 40%, #4c1d95 100%);
+    --text-primary: #f0fdfa;
+    --text-secondary: #99f6e4;
+    --accent-primary: #2dd4bf;
+    --accent-secondary: #a78bfa;
+    --glass-bg: rgba(2, 6, 23, 0.6);
+    --glass-border: rgba(45, 212, 191, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-velvet-nebula {
+    /* Velvet Nebula */
+    --bg-primary: linear-gradient(135deg, #2e1065 0%, #701a75 50%, #4c1d95 100%);
+    --text-primary: #fdf2f8;
+    --text-secondary: #fce7f3;
+    --accent-primary: #f472b6;
+    --accent-secondary: #d8b4fe;
+    --glass-bg: rgba(46, 16, 101, 0.6);
+    --glass-border: rgba(244, 114, 182, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-golden-hour {
+    /* Golden Hour */
+    --bg-primary: linear-gradient(to top, #7c2d12 0%, #9a3412 30%, #fb923c 100%);
+    --text-primary: #fff7ed;
+    --text-secondary: #ffedd5;
+    --accent-primary: #fdba74;
+    --accent-secondary: #fcd34d;
+    --glass-bg: rgba(124, 45, 18, 0.6);
+    --glass-border: rgba(253, 186, 116, 0.4);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-oceanic-abyss {
+    /* Oceanic Abyss */
+    --bg-primary: linear-gradient(to bottom, #042f2e 0%, #020617 100%);
+    --text-primary: #f0fdfa;
+    --text-secondary: #99f6e4;
+    --accent-primary: #14b8a6;
+    --accent-secondary: #38bdf8;
+    --glass-bg: rgba(4, 47, 46, 0.7);
+    --glass-border: rgba(20, 184, 166, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-forest-mist {
+    /* Forest Mist */
+    --bg-primary: linear-gradient(135deg, #064e3b 0%, #1e293b 100%);
+    --text-primary: #f0fdf4;
+    --text-secondary: #bbf7d0;
+    --accent-primary: #10b981;
+    --accent-secondary: #94a3b8;
+    --glass-bg: rgba(6, 78, 59, 0.6);
+    --glass-border: rgba(16, 185, 129, 0.3);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-ruby-horizon {
+    /* Ruby Horizon */
+    --bg-primary: linear-gradient(135deg, #450620 0%, #881337 50%, #0f172a 100%);
+    --text-primary: #fff1f2;
+    --text-secondary: #fecdd3;
+    --accent-primary: #fb7185;
+    --accent-secondary: #94a3b8;
+    --glass-bg: rgba(69, 6, 32, 0.7);
+    --glass-border: rgba(251, 113, 133, 0.3);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-silver-stream {
+    /* Silver Stream */
+    --bg-primary: linear-gradient(135deg, #1f2937 0%, #374151 50%, #111827 100%);
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --accent-primary: #9ca3af;
+    --accent-secondary: #60a5fa;
+    --glass-bg: rgba(31, 41, 55, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-neon-drift-v2 {
+    --bg-primary: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #06b6d4 100%);
+    --text-primary: #f5f3ff;
+    --text-secondary: #ddd6fe;
+    --accent-primary: #a78bfa;
+    --accent-secondary: #22d3ee;
+    --glass-bg: rgba(30, 27, 75, 0.6);
+    --glass-border: rgba(167, 139, 250, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-crimson-tide {
+    --bg-primary: linear-gradient(180deg, #450620 0%, #000000 100%);
+    --text-primary: #ffe4e6;
+    --text-secondary: #fda4af;
+    --accent-primary: #e11d48;
+    --accent-secondary: #9f1239;
+    --glass-bg: rgba(0, 0, 0, 0.85);
+    --glass-border: rgba(225, 29, 72, 0.3);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-azure-glaze {
+    --bg-primary: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+    --text-primary: #f0f9ff;
+    --text-secondary: #bae6fd;
+    --accent-primary: #38bdf8;
+    --accent-secondary: #0ea5e9;
+    --glass-bg: rgba(12, 74, 110, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-emerald-glow {
+    --bg-primary: radial-gradient(circle at center, #065f46 0%, #022c22 100%);
+    --text-primary: #ecfdf5;
+    --text-secondary: #6ee7b7;
+    --accent-primary: #10b981;
+    --accent-secondary: #34d399;
+    --glass-bg: rgba(6, 95, 70, 0.3);
+    --glass-border: rgba(16, 185, 129, 0.5);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-sunset-peak {
+    --bg-primary: linear-gradient(135deg, #7c2d12 0%, #9d174d 100%);
+    --text-primary: #fff7ed;
+    --text-secondary: #fce7f3;
+    --accent-primary: #fb923c;
+    --accent-secondary: #f472b6;
+    --glass-bg: rgba(124, 45, 18, 0.5);
+    --glass-border: rgba(251, 146, 60, 0.3);
+    --font-heading: var(--font-serif);
+    --font-text: var(--font-body);
+}
+
+.theme-midnight-spark {
+    --bg-primary: #020617;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #cbd5e1;
+    --accent-secondary: #3b82f6;
+    --glass-bg: rgba(15, 23, 42, 0.8);
+    --glass-border: rgba(203, 213, 225, 0.2);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-violet-ray {
+    --bg-primary: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%);
+    --text-primary: #f5f3ff;
+    --text-secondary: #ddd6fe;
+    --accent-primary: #8b5cf6;
+    --accent-secondary: #c084fc;
+    --glass-bg: rgba(76, 29, 149, 0.4);
+    --glass-border: rgba(139, 92, 246, 0.4);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-body);
+}
+
+.theme-cyber-punk {
+    --bg-primary: #000000;
+    --text-primary: #facc15;
+    --text-secondary: #f472b6;
+    --accent-primary: #facc15;
+    --accent-secondary: #f472b6;
+    --glass-bg: rgba(0, 0, 0, 0.9);
+    --glass-border: rgba(250, 204, 21, 0.3);
+    --font-heading: var(--font-display);
+    --font-text: var(--font-mono);
+}
+
+.theme-arctic-frost {
+    --bg-primary: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --accent-primary: #0ea5e9;
+    --accent-secondary: #7dd3fc;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(14, 165, 233, 0.2);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
+.theme-deep-forest {
+    --bg-primary: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+    --text-primary: #f0fdf4;
+    --text-secondary: #86efac;
+    --accent-primary: #10b981;
+    --accent-secondary: #059669;
+    --glass-bg: rgba(6, 78, 59, 0.7);
+    --glass-border: rgba(16, 185, 129, 0.2);
+    --font-heading: var(--font-body);
+    --font-text: var(--font-body);
+}
+
 body {
     background: var(--bg-primary);
     /* Fallback */
@@ -423,16 +660,15 @@ body {
 .text-on-glass {
     color: var(--text-secondary);
 }
+
 .glass-mosaic {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.01) 100%
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(255, 255, 255, 0.01) 100%);
     backdrop-filter: blur(40px) saturate(200%);
     -webkit-backdrop-filter: blur(40px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 
+    box-shadow:
         0 8px 32px 0 rgba(0, 0, 0, 0.37),
         inset 0 0 80px rgba(255, 255, 255, 0.02);
     position: relative;

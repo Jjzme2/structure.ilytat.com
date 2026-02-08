@@ -63,13 +63,16 @@ export const useR2 = () => {
         }
     }
 
-    const getDownloadUrl = (key: string) => {
-        // We will create a proxy endpoint for this
-        return `/api/documents/download?key=${encodeURIComponent(key)}`
+    const getDownloadUrl = async (key: string) => {
+        if (!user.value) return ''
+        const token = await user.value.getIdToken()
+        return `/api/documents/download?key=${encodeURIComponent(key)}&token=${token}`
     }
 
-    const getPreviewUrl = (key: string) => {
-        return `/api/documents/download?key=${encodeURIComponent(key)}&inline=true`
+    const getPreviewUrl = async (key: string) => {
+        if (!user.value) return ''
+        const token = await user.value.getIdToken()
+        return `/api/documents/download?key=${encodeURIComponent(key)}&inline=true&token=${token}`
     }
 
     return {

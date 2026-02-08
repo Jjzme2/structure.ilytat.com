@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Reload triggered for layer integration - standardized root structure
 export default defineNuxtConfig({
+  extends: [
+    './ilytat_common_packages/packages/ilytat-admin-panel',
+    './ilytat_common_packages/packages/ilytat-animations'
+  ],
   compatibilityDate: '2026-02-05',
   devtools: { enabled: true },
   devServer: {

@@ -21,6 +21,7 @@ export interface Task {
     // Daily 6 Focus
     focusDate?: string | null      // ISO date when added to focus (e.g., "2026-02-05")
     focusOrder?: number | null     // Order within daily focus (1-6)
+    rank?: number // Global rank for ordering in other columns (Backlog, Doing, Done)
 
     // Growth tracking
     category?: TaskCategory | null
@@ -64,8 +65,18 @@ export interface UserProfile {
     email: string | null;
     displayName: string | null;
     photoURL?: string | null;
-    role?: 'admin' | 'member';
+    role?: 'admin' | 'member'; // Deprecated in favor of roles array, but kept for backward compatibility
+    roles?: ('admin' | 'member' | 'viewer')[];
+    tenantId?: string; // 'ilytat' or other company IDs
     createdAt: Date | any;
+}
+
+export interface Tenant {
+    id: string;
+    name: string;
+    domain?: string;
+    createdAt: Date | any;
+    settings?: Record<string, any>;
 }
 
 // Supply Room Models
@@ -129,6 +140,21 @@ export interface ActivityItem {
     metadata?: Record<string, any> // Flexible payload for details
 }
 
+// Intelligence Briefings
+export interface Briefing {
+    id: string
+    title: string
+    date: string // ISO date
+    tldr: string
+    confidenceScore: number // 0-100
+    content: string // Markdown
+    source: string // e.g. "Legal AI", "Strategy AI"
+    tags: string[]
+    tenantId?: string // details if company vs personal, though usually company
+    userId?: string
+    createdAt: Date | any
+}
+
 // Inbox & Messaging
 export interface InboxItem {
     id: string
@@ -154,5 +180,16 @@ export interface CommandItem {
     section: 'Navigation' | 'Actions' | 'Tasks' | 'Search' | 'Quick Links' | 'Apps' | 'System' | 'Themes'
     shortcut?: string[]
     external?: boolean
+    adminOnly?: boolean
+}
+
+// Task Groups (Templates)
+export interface TaskGroup {
+    id: string
+    name: string
+    description: string
+    tasks: any[] // structured templates
+    updatedAt: Date | any
+    createdBy: string
 }
 

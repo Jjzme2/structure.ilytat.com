@@ -1,7 +1,15 @@
 import { getAuth } from 'firebase-admin/auth';
 
 export const requireAuth = async (event: any) => {
-    const authHeader = getHeader(event, 'authorization');
+    let authHeader = getHeader(event, 'authorization');
+
+    // Fallback to query parameter
+    if (!authHeader) {
+        const query = getQuery(event)
+        if (query.token) {
+            authHeader = `Bearer ${query.token}`
+        }
+    }
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         console.warn('requireAuth: Missing or invalid Authorization header');
