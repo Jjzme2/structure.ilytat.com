@@ -14,11 +14,11 @@
         <!-- Main Layout -->
         <template v-else>
             <!-- Sidebar Navigation -->
-            <aside :class="[
-                'fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0',
-                isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            ]">
-                <div class="flex flex-col h-full">
+            <aside
+                class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0 lg:translate-x-0"
+                :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+                <div class="flex flex-col h-full relative group/sidebar">
+
                     <!-- Sidebar Header -->
                     <div class="p-6 border-b border-slate-800">
                         <h1 class="text-2xl font-black text-amber-500 tracking-tighter uppercase leading-none mb-1">HQ
@@ -37,7 +37,7 @@
                                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                             ]">
                             <span class="text-base">{{ tab.icon }}</span>
-                            {{ tab.label }}
+                            <span>{{ tab.label }}</span>
                         </button>
                     </nav>
 
@@ -45,7 +45,8 @@
                     <div class="p-4 border-t border-slate-800 space-y-2">
                         <button @click="router.push('/')"
                             class="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-bold text-slate-500 hover:text-amber-500 uppercase tracking-wider transition-colors">
-                            <span>🏠</span> Headquarters
+                            <span>🏠</span>
+                            <span>Headquarters</span>
                         </button>
                         <div class="px-4 py-2 bg-slate-800/50 rounded-lg">
                             <div class="text-[8px] text-slate-500 uppercase tracking-widest mb-1">Security Level</div>
@@ -94,6 +95,8 @@
                             <AdminPermissions v-if="activeTab === 'permissions'" />
                             <AdminTasks v-if="activeTab === 'tasks'" />
                             <AdminSystem v-if="activeTab === 'system'" />
+                            <AdminTenant v-if="activeTab === 'tenant'" />
+                            <AdminProjects v-if="activeTab === 'projects'" />
                         </div>
                     </div>
                 </div>
@@ -110,6 +113,7 @@
 import { ref, watch, onMounted, computed } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import { useUserProfile } from '../composables/useUserProfile';
+import { useRouter, useRoute, useFetch, useHead, definePageMeta } from '#imports';
 
 const currentUser = useCurrentUser();
 const { profile, loading: isProfileLoading, initialized: isProfileReady, initializeUserProfile: initialize } = useUserProfile();
@@ -123,14 +127,6 @@ const { data, error, pending } = useFetch('/api/admin/verify-access', {
     server: false // Only check on client where cookie is available reliably
 });
 
-watch([data, error, pending], () => {
-    console.log('[Admin] Verification Status:', {
-        data: data.value,
-        error: error.value,
-        pending: pending.value
-    });
-});
-
 // Gate Access based on Server Response
 const hasAccess = computed(() => !!data.value?.access);
 
@@ -140,7 +136,9 @@ const tabs = [
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'permissions', label: 'Permissions', icon: '🔐' },
     { id: 'tasks', label: 'Tasks', icon: '📋' },
+    { id: 'projects', label: 'Projects', icon: '📁' },
     { id: 'system', label: 'System', icon: '⚙️' },
+    { id: 'tenant', label: 'Tenant', icon: '🏢' },
 ];
 
 const filteredTabs = computed(() => tabs);

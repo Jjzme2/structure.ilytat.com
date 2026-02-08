@@ -24,7 +24,7 @@ const confidenceColor = computed(() => {
 
 <template>
   <NuxtLink 
-    :to="`/intelligence/${briefing.id}`"
+    :to="`/documents/briefing/${briefing.id}`"
     class="group relative bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-indigo-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 block h-full flex flex-col"
   >
     <!-- Header -->

@@ -18,6 +18,20 @@ export const useModules = () => {
     // In a real app, 'enabled' might come from an API or config file
     const modules = ref<Module[]>([
         {
+            id: 'projects',
+            name: 'Projects',
+            path: '/admin',
+            query: { tab: 'projects' },
+            icon: 'archive',
+            description: 'Strategic project management and tracking.',
+            enabled: true,
+            status: 'active',
+            public: false,
+            category: 'focus',
+            colorClass: 'from-violet-500 to-fuchsia-600',
+            iconBgClass: 'bg-violet-600 shadow-violet-500/20'
+        },
+        {
             id: 'tasks',
             name: 'Operations',
             path: '/tasks',
@@ -70,19 +84,6 @@ export const useModules = () => {
             iconBgClass: 'bg-amber-600 shadow-amber-500/20'
         },
         {
-            id: 'supply',
-            name: 'Asset Registry',
-            path: '/supply',
-            icon: 'archive',
-            description: 'Inventory tracking and digital subscription oversight.',
-            enabled: true,
-            status: 'beta',
-            public: false,
-            category: 'assets',
-            colorClass: 'from-emerald-500 to-teal-600',
-            iconBgClass: 'bg-emerald-600 shadow-emerald-500/20'
-        },
-        {
             id: 'strategy',
             name: 'Strategy',
             path: '/strategy',
@@ -97,10 +98,10 @@ export const useModules = () => {
         },
         {
             id: 'ledger',
-            name: 'Finance',
+            name: 'Finance & Assets',
             path: '/ledger',
             icon: 'chart',
-            description: 'Financial performance and burn rate.',
+            description: 'Financial performance, burn rate, and asset inventory.',
             enabled: true,
             status: 'beta',
             public: false,

@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen space-y-8 pb-20 animate-fade-in">
+    <div class="min-h-screen space-y-8 pb-20">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="space-y-1">
@@ -34,8 +34,8 @@
                 </div>
 
                 <!-- Export Menu -->
-                <div class="relative group/export">
-                    <button
+                <div class="relative group/export" @mouseleave="isExportOpen = false">
+                    <button @click="isExportOpen = !isExportOpen"
                         class="flex items-center gap-2 p-2.5 rounded-xl bg-glass border border-glass text-slate-400 hover:text-white transition-all">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -44,7 +44,8 @@
                         <span class="text-xs font-bold uppercase tracking-wider hidden md:block">Export</span>
                     </button>
                     <div
-                        class="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl opacity-0 invisible group-hover/export:opacity-100 group-hover/export:visible transition-all z-50 overflow-hidden">
+                        class="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl opacity-0 invisible group-hover/export:opacity-100 group-hover/export:visible transition-all z-50 overflow-hidden"
+                        :class="{ '!opacity-100 !visible': isExportOpen }">
                         <div class="px-4 py-3 border-b border-slate-800 bg-slate-900/50">
                             <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Export
                                 System</span>
@@ -103,19 +104,19 @@
                 class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-fuchsia-600 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-1000">
             </div>
             <div
-                class="relative flex flex-col gap-3 bg-glass backdrop-blur-xl border border-glass rounded-2xl p-2 shadow-xl transition-all">
-                <div class="flex gap-3">
+                class="relative flex flex-col md:flex-row gap-3 bg-glass backdrop-blur-xl border border-glass rounded-2xl p-2 shadow-xl transition-all">
+                <div class="flex flex-col md:flex-row gap-3 w-full">
                     <input type="text" v-model="newTaskTitle"
-                        class="flex-1 bg-transparent border-none text-slate-100 placeholder-slate-500 focus:ring-0 py-2 px-4 text-lg font-medium outline-none"
+                        class="flex-1 w-full bg-transparent border-none text-slate-100 placeholder-slate-500 focus:ring-0 py-2 px-4 text-lg font-medium outline-none"
                         placeholder="New Action Item..." required />
                     <select v-model="newTaskCategory"
-                        class="w-40 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 text-sm outline-none focus:border-purple-500">
+                        class="w-full md:w-40 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 py-2 md:py-0 text-sm outline-none focus:border-purple-500">
                         <option :value="null">No category</option>
                         <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.emoji }} {{ cat.label }}
                         </option>
                     </select>
                     <select v-model="newTaskOKRLink"
-                        class="w-48 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 text-sm outline-none focus:border-purple-500">
+                        class="w-full md:w-48 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 py-2 md:py-0 text-sm outline-none focus:border-purple-500">
                         <option :value="null">Strategic Link: None</option>
                         <optgroup v-for="okr in okrs" :key="okr.id" :label="okr.objective">
                             <option v-for="kr in okr.keyResults" :key="kr.id" :value="`${okr.id}|${kr.id}`">
@@ -124,7 +125,7 @@
                         </optgroup>
                     </select>
                     <button type="submit" :disabled="!newTaskTitle.trim()"
-                        class="px-6 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                        class="w-full md:w-auto px-6 py-2 md:py-0 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                         Create
                     </button>
                 </div>
@@ -186,7 +187,7 @@
                     </button>
                 </div>
             </TransitionGroup>
-
+            
             <div v-if="filteredListTasks.length === 0" class="text-center py-24 group">
                 <div
                     class="inline-flex h-24 w-24 items-center justify-center rounded-full bg-glass border border-glass group-hover:border-accent-primary/50 transition-all duration-500 mb-8">
@@ -200,7 +201,7 @@
                 <p class="text-slate-600 mt-2">Add a new task above to get started.</p>
             </div>
         </div>
-
+        
         <!-- KANBAN VIEW -->
         <div v-if="viewMode === 'kanban'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Backlog Column -->
@@ -243,7 +244,7 @@
                 <p v-if="backlogTasks.length === 0" class="text-center py-8 text-slate-600 text-sm">No tasks in backlog
                 </p>
             </div>
-
+            
             <!-- Today's Focus Column -->
             <div class="space-y-4">
                 <div class="flex items-center gap-3 px-2">
@@ -352,6 +353,7 @@
                     appear here</p>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -383,6 +385,7 @@ const newTaskTitle = ref('')
 const newTaskDescription = ref('')
 const newTaskCategory = ref<string | null>(null)
 const newTaskOKRLink = ref<string | null>(null)
+const isExportOpen = ref(false)
 const activeFilter = ref('all')
 const route = useRoute()
 const router = useRouter()
@@ -416,13 +419,14 @@ const todayFormatted = computed(() => {
 const tasksQuery = computed(() => {
     if (!user.value) return null
     return query(
-        collection(db, 'tasks'),
+        collection(db, store.collectionPath),
         where('userId', '==', user.value.uid),
         where('status', 'in', ['backlog', 'focus', 'doing', 'done'])
     )
 })
 
-const tasks = useCollection<Task>(tasksQuery)
+const tasks = useCollection<Task>(tasksQuery, { ssrKey: 'tasks' }) // Add ssrKey to help with hydration
+
 
 // List view filtered tasks - prioritize focus and in-progress tasks
 const filteredListTasks = computed(() => {
@@ -456,15 +460,45 @@ const filteredListTasks = computed(() => {
     return sorted.filter(t => t.status !== 'archived')
 })
 
-// Kanban columns
-const backlogTasks = computed(() => (tasks.value?.filter(t => t.status === 'backlog') || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
+// O(N) Grouping Pass
+const groupedTasks = computed(() => {
+    const groups = {
+        backlog: [] as Task[],
+        focus: [] as Task[],
+        doing: [] as Task[],
+        done: [] as Task[],
+        archived: [] as Task[]
+    }
+
+    if (!tasks.value) return groups
+
+    tasks.value.forEach(task => {
+        // Type-safe access or fallback
+        if (task.status in groups) {
+            groups[task.status].push(task)
+        } else {
+            // Fallback for unknown status
+            groups.backlog.push(task)
+        }
+    })
+
+    return groups
+})
+
+// Kanban columns - O(M log M) where M is subset size
+const backlogTasks = computed(() => (groupedTasks.value.backlog || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
+
 const focusTasks = computed(() =>
-    (tasks.value?.filter(t => t.status === 'focus' && t.focusDate === today) || [])
+    // Focus tasks also check focusDate match
+    (groupedTasks.value.focus || [])
+        .filter(t => t.focusDate === today)
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))
 )
-const doingTasks = computed(() => (tasks.value?.filter(t => t.status === 'doing') || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
+
+const doingTasks = computed(() => (groupedTasks.value.doing || []).sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)))
+
 const doneTasks = computed(() =>
-    (tasks.value?.filter(t => t.status === 'done') || [])
+    (groupedTasks.value.done || [])
         .sort((a, b) => (b.completedAt?.seconds || 0) - (a.completedAt?.seconds || 0))
         .slice(0, 10)
 )
@@ -518,16 +552,21 @@ const addTask = async () => {
         krId = kid
     }
 
-    await store.addTask(newTaskTitle.value, {
-        category: newTaskCategory.value ?? undefined,
-        description: newTaskDescription.value.trim() || undefined,
-        okrId,
-        krId
-    })
-    newTaskTitle.value = ''
-    newTaskDescription.value = ''
-    newTaskCategory.value = null
-    newTaskOKRLink.value = null
+    try {
+        await store.addTask(newTaskTitle.value, {
+            category: newTaskCategory.value ?? undefined,
+            description: newTaskDescription.value.trim() || undefined,
+            okrId,
+            krId
+        })
+        newTaskTitle.value = ''
+        newTaskDescription.value = ''
+        newTaskCategory.value = null
+        newTaskOKRLink.value = null
+    } catch (e: any) {
+        console.error('Failed to add task:', e)
+        alert(`Error adding task: ${e.message}`)
+    }
 }
 
 const toggleTask = async (task: Task) => {
@@ -575,22 +614,6 @@ const handleArchive = async (id: string) => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .ghost {
     opacity: 0.5;
     background: rgba(100, 116, 139, 0.2);

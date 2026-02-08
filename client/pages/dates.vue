@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen space-y-8 pb-20 animate-fade-in">
+  <div class="min-h-screen space-y-8 pb-20">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div class="space-y-1">
@@ -464,32 +464,6 @@ const deleteDate = async (id: string) => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 2px;
 }

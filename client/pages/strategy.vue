@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen space-y-12 pb-20 animate-fade-in">
+    <div class="min-h-screen space-y-12 pb-20">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="space-y-1">
@@ -93,10 +93,12 @@
                                 <span class="text-slate-200 font-bold">{{ kr.description }}</span>
                                 <div class="flex items-center gap-3">
                                     <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
-                                        {{ getTasksForKR(okr.id, kr.id).filter(t => t.status === 'done').length }} / {{ getTasksForKR(okr.id, kr.id).length }} Tasks
+                                        {{getTasksForKR(okr.id, kr.id).filter(t => t.status === 'done').length}} / {{
+                                        getTasksForKR(okr.id, kr.id).length }} Tasks
                                     </span>
-                                    <span class="font-mono font-bold text-amber-400">{{ kr.current }} / {{ kr.target }} {{
-                                        kr.unit }}</span>
+                                    <span class="font-mono font-bold text-amber-400">{{ kr.current }} / {{ kr.target }}
+                                        {{
+                                            kr.unit }}</span>
                                 </div>
                             </div>
                             <!-- Progress Bar -->
@@ -110,12 +112,14 @@
                             </div>
 
                             <!-- Associated Tasks -->
-                            <div v-if="getTasksForKR(okr.id, kr.id).length > 0" class="pl-4 space-y-1.5 border-l border-slate-800">
-                                <div v-for="task in getTasksForKR(okr.id, kr.id)" :key="task.id" 
+                            <div v-if="getTasksForKR(okr.id, kr.id).length > 0"
+                                class="pl-4 space-y-1.5 border-l border-slate-800">
+                                <div v-for="task in getTasksForKR(okr.id, kr.id)" :key="task.id"
                                     class="flex items-center gap-2 text-[11px] group/task">
-                                    <div class="w-1.5 h-1.5 rounded-full" 
+                                    <div class="w-1.5 h-1.5 rounded-full"
                                         :class="task.status === 'done' ? 'bg-emerald-500' : 'bg-slate-700'"></div>
-                                    <span :class="task.status === 'done' ? 'text-slate-500 line-through' : 'text-slate-400'">
+                                    <span
+                                        :class="task.status === 'done' ? 'text-slate-500 line-through' : 'text-slate-400'">
                                         {{ task.title }}
                                     </span>
                                 </div>
@@ -194,7 +198,7 @@ const okrForm = reactive({
 
 const tasksQuery = computed(() => {
     if (!user.value) return null
-    return query(collection(db, 'tasks'), where('userId', '==', user.value.uid))
+    return query(collection(db, tasksStore.collectionPath), where('userId', '==', user.value.uid))
 })
 const tasks = useCollection<Task>(tasksQuery)
 
@@ -268,29 +272,4 @@ const getStatusColor = (status: string) => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
 </style>

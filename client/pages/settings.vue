@@ -1,13 +1,110 @@
 <template>
-  <div class="space-y-8 animate-fade-in">
-    <div class="flex items-center justify-between">
+  <div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400">
         Settings
       </h1>
+
+      <!-- Tabs -->
+      <div class="flex p-1 bg-slate-900/50 backdrop-blur-sm rounded-xl border border-slate-800/50">
+        <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          :class="activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'">
+          {{ tab.label }}
+        </button>
+      </div>
     </div>
 
-    <!-- Appearance & Themes -->
-    <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 shadow-lg">
+    <!-- Profile Tab -->
+    <div v-show="activeTab === 'profile'" class="space-y-6 animate-fade-in">
+      <!-- Profile Settings -->
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 shadow-lg relative overflow-hidden">
+        <div class="flex flex-col md:flex-row gap-8">
+          <!-- Avatar & Initial Info -->
+          <div class="flex flex-col items-center gap-4 shrink-0">
+            <div
+              class="h-24 w-24 rounded-2xl bg-slate-700 border-2 border-slate-600 flex items-center justify-center overflow-hidden relative group">
+              <img v-if="profileForm.photoURL" :src="profileForm.photoURL" class="h-full w-full object-cover" />
+              <span v-else class="text-3xl font-bold text-slate-500">{{ profile?.displayName?.charAt(0) ||
+                profile?.email?.charAt(0) }}</span>
+
+              <!-- Hover Edit Overlay (future feature) -->
+              <div
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                <span class="text-xs font-bold text-white">Edit</span>
+              </div>
+            </div>
+            <div class="text-center">
+              <p class="text-white font-bold">{{ profile?.displayName || 'User' }}</p>
+              <p class="text-xs text-slate-500 font-mono">{{ profile?.email }}</p>
+            </div>
+          </div>
+
+          <!-- Edit Form -->
+          <div class="flex-1 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-slate-400">Display Name</label>
+                <input v-model="profileForm.displayName" type="text"
+                  class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:border-indigo-500 outline-none transition-colors"
+                  placeholder="Your Name" />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-slate-400">Photo URL</label>
+                <input v-model="profileForm.photoURL" type="url"
+                  class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:border-indigo-500 outline-none transition-colors font-mono text-xs"
+                  placeholder="https://..." />
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-slate-400">Autobiography</label>
+              <textarea v-model="profileForm.bio" rows="3"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:border-indigo-500 outline-none transition-colors resize-none"
+                placeholder="Tell us a bit about yourself..."></textarea>
+              <p class="text-[10px] text-slate-500 text-right">Visible in public directory when signed out.</p>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button @click="saveProfile" :disabled="saving"
+                class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-50">
+                {{ saving ? 'Saving...' : 'Save Profile' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Info (Verified from profile.vue) -->
+      <div class="bg-slate-900/30 border border-slate-800 rounded-3xl p-8">
+        <h2 class="text-lg font-bold text-slate-400 mb-4">Account Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+          <div>
+            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-1">User ID</span>
+            <code class="bg-slate-950 px-2 py-1 rounded text-slate-300 font-mono select-all">{{ user?.uid }}</code>
+          </div>
+          <div>
+            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-1">Joined</span>
+            <span class="text-slate-300">{{ user?.metadata?.creationTime ? new
+              Date(user.metadata.creationTime).toLocaleDateString() : 'Unknown' }}</span>
+          </div>
+          <div>
+            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-1">Tenant ID</span>
+            <code
+              class="bg-slate-950 px-2 py-1 rounded text-slate-300 font-mono select-all">{{ profile?.tenantId || 'ilytat' }}</code>
+          </div>
+          <div>
+            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-1">Last Login</span>
+            <span class="text-slate-300">{{ user?.metadata?.lastSignInTime ? new
+              Date(user.metadata.lastSignInTime).toLocaleDateString() : 'Now' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance Tab -->
+    <div v-show="activeTab === 'appearance'"
+      class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 shadow-lg animate-fade-in">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <h2 class="text-xl font-semibold text-white font-display">Appearance</h2>
@@ -74,7 +171,57 @@
 
 <script setup lang="ts">
 import { useTheme } from '~/composables/useTheme'
+import { useUserProfile } from '~/composables/useUserProfile'
+import { useCurrentUser } from 'vuefire'
 
+const route = useRoute()
+const router = useRouter()
+const user = useCurrentUser()
+
+// Tab Logic
+const tabs = [
+  { id: 'profile', label: 'Profile' },
+  { id: 'appearance', label: 'Appearance' }
+]
+const activeTab = ref((route.query.tab as string) || 'profile')
+
+watch(activeTab, (newTab) => {
+  router.replace({ query: { ...route.query, tab: newTab } })
+})
+
+// Profile Logic
+const { profile, updateProfile } = useUserProfile()
+const profileForm = reactive({
+  displayName: '',
+  bio: '',
+  photoURL: ''
+})
+const saving = ref(false)
+
+watch(profile, (p) => {
+  if (p) {
+    profileForm.displayName = p.displayName || ''
+    profileForm.bio = p.bio || ''
+    profileForm.photoURL = p.photoURL || ''
+  }
+}, { immediate: true })
+
+const saveProfile = async () => {
+  saving.value = true
+  try {
+    await updateProfile({
+      displayName: profileForm.displayName,
+      bio: profileForm.bio,
+      photoURL: profileForm.photoURL
+    })
+  } catch (e) {
+    console.error(e)
+  } finally {
+    saving.value = false
+  }
+}
+
+// Theme Logic
 const { themes, currentTheme, applyTheme } = useTheme()
 const themeSearch = ref('')
 
@@ -98,19 +245,4 @@ const filteredThemes = computed(() => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 </style>

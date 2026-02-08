@@ -15,7 +15,8 @@ service cloud.firestore {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
         request.auth.token.admin == true ||
-        request.auth.token.email == 'zettler.jj@ilytat.com'
+        request.auth.token.email == 'zettler.jj@ilytat.com' ||
+        request.auth.uid == 'BoHGcwh2ApNQiJJIgjZWBC9hY8I3'
       );
     }
 
@@ -50,11 +51,13 @@ service cloud.firestore {
 
     // Personal Data
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if true; // Allow public directory listing
+      allow write: if isOwner(userId) || isAdmin();
       
       // Allow access to all subcollections
       match /{document=**} {
-        allow read, write: if isOwner(userId);
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isOwner(userId) || isAdmin();
       }
     }
 
@@ -67,23 +70,40 @@ service cloud.firestore {
       allow write: if false; // Internal/Admin only
     }
 
+    // --- RBAC ---
+    match /roles/{roleId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    match /permissions/{permId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
     // Quotes - Keep public read for now
     match /quotes/{quoteId} {
       allow read: if true;
       allow write: if isAuthenticated(); // Restrict?
     }
 
+    // Activity Logs
+    match /activities/{activityId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+    }
+
     // Root Collections (Legacy Support - Optional)
     // You might want to remove these after full migration
     match /tasks/{taskId} {
-      allow read: if isOwner(resource.data.userId); // Read only if existing resource is mine
+      allow read: if isOwner(resource.data.userId) || isAdmin(); // Read only if existing resource is mine
       allow create: if isOwner(request.resource.data.userId); // Create only if I set myself as owner
-      allow update, delete: if isOwner(resource.data.userId); // Update only if existing resource is mine
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin(); // Update only if existing resource is mine
     }
     match /dates/{dateId} {
-      allow read: if isOwner(resource.data.userId);
+      allow read: if isOwner(resource.data.userId) || isAdmin();
       allow create: if isOwner(request.resource.data.userId);
-      allow update, delete: if isOwner(resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
     }
     // ... other legacy roots can be matched generic or removed
     

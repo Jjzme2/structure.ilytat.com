@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useFirestore } from 'vuefire'
-import { collection, query, where, getCountFromServer } from 'firebase/firestore'
+import { collection, collectionGroup, query, where, getCountFromServer } from 'firebase/firestore'
 
 const db = useFirestore()
 const { services, checkHealth } = useSystemHealth()
@@ -58,22 +58,33 @@ const stats = ref([
 
 
 const loadStats = async () => {
+    // Helper to safely get count or return null
+    const safeCount = async (q: any) => {
+        try {
+            const snapshot = await getCountFromServer(q)
+            return snapshot.data().count
+        } catch (e) {
+            console.warn('Stat fetch failed:', e)
+            return null
+        }
+    }
+
     try {
-        // Parallel load for better performance
+        // Parallel load with individual error handling
         const [usersCount, activeTasksCount, activitiesCount] = await Promise.all([
-            getCountFromServer(collection(db, 'users')),
-            getCountFromServer(query(collection(db, 'tasks'), where('status', '!=', 'completed'))),
-            getCountFromServer(collection(db, 'activities'))
+            safeCount(collection(db, 'users')),
+            safeCount(query(collectionGroup(db, 'tasks'), where('status', '!=', 'completed'))),
+            safeCount(collection(db, 'activities'))
         ])
 
-        const totalUsers = usersCount.data().count
-        const activeTasks = activeTasksCount.data().count
-        const auditEvents = activitiesCount.data().count
+        const totalUsers = usersCount ?? 'N/A'
+        const activeTasks = activeTasksCount ?? 'N/A'
+        const auditEvents = activitiesCount ?? 'N/A'
 
         stats.value = [
-            { label: 'Total Users', value: totalUsers.toLocaleString(), trend: 4 },
-            { label: 'Active Tasks', value: activeTasks.toLocaleString(), trend: -2 },
-            { label: 'Audit Events', value: auditEvents.toLocaleString(), trend: 15 },
+            { label: 'Total Users', value: typeof totalUsers === 'number' ? totalUsers.toLocaleString() : totalUsers, trend: 4 },
+            { label: 'Active Tasks', value: typeof activeTasks === 'number' ? activeTasks.toLocaleString() : activeTasks, trend: -2 },
+            { label: 'Audit Events', value: typeof auditEvents === 'number' ? auditEvents.toLocaleString() : auditEvents, trend: 15 },
             { label: 'System Uptime', value: '99.98%', trend: 0 },
         ]
 

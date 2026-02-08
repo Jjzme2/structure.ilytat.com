@@ -25,8 +25,17 @@ export const useActivityLog = () => {
         return await service.fetchRecent(user.value || null, count)
     }
 
+    /**
+     * Fetch recent activity across all users (Admin only)
+     * @param count Number of items to retrieve (default 50)
+     */
+    const adminFetchRecent = async (count: number = 50): Promise<ActivityItem[]> => {
+        return await service.fetchAllRecent(count)
+    }
+
     return {
         log,
-        fetchRecent
+        fetchRecent,
+        adminFetchRecent
     }
 }

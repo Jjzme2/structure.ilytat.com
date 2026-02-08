@@ -28,9 +28,18 @@ export const useQuotesStore = defineStore('quotes', () => {
         await deleteDoc(docRef)
     }
 
+    const toggleFavorite = async (quote: Quote) => {
+        if (!user.value) return
+        const docRef = doc(db, 'quotes', quote.id)
+        await updateDoc(docRef, {
+            isFavorite: !quote.isFavorite
+        })
+    }
+
     return {
         addQuote,
         updateQuote,
-        deleteQuote
+        deleteQuote,
+        toggleFavorite
     }
 })

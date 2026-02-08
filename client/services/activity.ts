@@ -19,12 +19,15 @@ class ActivityService {
         }
 
         try {
+            // Firestore doesn't accept undefined, so we must sanitize metadata
+            const safeMetadata = JSON.parse(JSON.stringify(metadata))
+
             await addDoc(collection(this.db, 'activities'), {
                 action,
                 module,
                 userId: user.uid,
                 timestamp: serverTimestamp(),
-                metadata
+                metadata: safeMetadata
             })
         } catch (e) {
             console.error('ActivityService: Failed to log action', e)

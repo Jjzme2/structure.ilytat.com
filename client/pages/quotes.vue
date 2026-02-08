@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen space-y-12 pb-20 animate-fade-in">
+  <div class="min-h-screen space-y-12 pb-20">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-2">
@@ -113,6 +113,18 @@
             </cite>
             
             <div class="flex gap-2">
+               <!-- Favorite Toggle -->
+               <button 
+                @click="store.toggleFavorite(quote)"
+                class="p-2.5 rounded-xl bg-slate-800/50 transition-all duration-300"
+                :class="quote.isFavorite ? 'text-rose-500 hover:bg-rose-500/10' : 'text-slate-500 hover:text-rose-400 hover:bg-rose-400/10'"
+                title="Favorite"
+              >
+                <svg class="w-5 h-5" :class="{ 'fill-current': quote.isFavorite }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
+
               <button 
                 @click="startEdit(quote)"
                 class="p-2.5 rounded-xl bg-slate-800/50 text-slate-500 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all duration-300"
@@ -174,7 +186,7 @@ const quotesQuery = computed(() => {
     if (!user.value) return null
     return query(
         collection(db, 'quotes'),
-        where('userId', '==', user.value.uid)
+        // where('userId', '==', user.value.uid) // Enable if private. Loading all for shared library.
     )
 })
 
@@ -248,15 +260,6 @@ const deleteQuote = async (id: string) => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .slide-down-enter-active,
 .slide-down-leave-active {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);

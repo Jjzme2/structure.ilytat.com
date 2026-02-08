@@ -9,25 +9,30 @@ const toggleScope = () => {
 </script>
 
 <template>
-  <button
-    @click="toggleScope"
-    class="relative group flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-accent-primary/50 transition-all duration-300"
-    :title="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'"
-  >
-    <!-- Indicator Dot -->
-    <div 
-        class="w-2 h-2 rounded-full transition-colors duration-300 shadow-[0_0_10px_currentColor]"
-        :class="scope === 'company' ? 'bg-indigo-400 text-indigo-400' : 'bg-emerald-400 text-emerald-400'"
-    ></div>
+  <button @click="toggleScope"
+    class="relative group flex items-center gap-3 px-1 py-1 rounded-full border transition-all duration-500" :class="scope === 'company'
+      ? 'bg-slate-900/80 border-indigo-500/30 hover:border-indigo-400'
+      : 'bg-slate-900/80 border-emerald-500/30 hover:border-emerald-400'"
+    :title="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'">
+    <!-- Slider Background -->
+    <div class="absolute inset-0 rounded-full transition-colors duration-500 opacity-10"
+      :class="scope === 'company' ? 'bg-indigo-500' : 'bg-emerald-500'"></div>
 
-    <!-- Label -->
-    <span class="text-xs font-bold uppercase tracking-wider text-muted group-hover:text-text-primary transition-colors">
-        {{ scope === 'company' ? 'HQ' : 'ME' }}
-    </span>
+    <!-- Toggle Knob (Animated) -->
+    <div
+      class="absolute top-1 bottom-1 w-[50%] bg-gradient-to-br rounded-full shadow-lg transition-all duration-500 ease-out border border-white/10"
+      :class="scope === 'company'
+        ? 'left-1 from-indigo-500 to-indigo-600 shadow-indigo-500/20'
+        : 'left-[48%] from-emerald-400 to-emerald-600 shadow-emerald-500/20'">
+    </div>
 
-    <!-- Tooltip (Optional visual cue) -->
-    <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-        {{ scope === 'company' ? 'Company Workspace' : 'Personal Workspace' }}
+    <!-- Labels -->
+    <div
+      class="relative z-10 flex items-center justify-between w-24 h-7 text-[10px] font-black tracking-widest uppercase select-none">
+      <span class="flex-1 text-center transition-colors duration-300"
+        :class="scope === 'company' ? 'text-white' : 'text-slate-600'">HQ</span>
+      <span class="flex-1 text-center transition-colors duration-300"
+        :class="scope === 'personal' ? 'text-white' : 'text-slate-600'">ME</span>
     </div>
   </button>
 </template>

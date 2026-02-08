@@ -38,6 +38,7 @@ export const useInbox = () => {
         try {
             await addDoc(collection(db, `users/${toUserId}/inbox`), {
                 ...message,
+                fromId: user.value?.uid,
                 to: toUserId,
                 read: false,
                 archived: false,

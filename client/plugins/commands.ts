@@ -46,11 +46,38 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     register({
         id: 'nav-notes',
-        label: 'Go to Knowledge',
+        label: 'Go to Knowledge Base',
         icon: '📝',
         section: 'Apps',
-        keywords: ['notes', 'docs', 'wiki', 'intelligence'],
-        action: () => router.push('/intelligence')
+        keywords: ['notes', 'docs', 'wiki', 'intelligence', 'briefing', 'documents'],
+        action: () => router.push('/documents')
+    })
+
+    register({
+        id: 'nav-profile',
+        label: 'Go to User Profile',
+        icon: '👤',
+        section: 'System', // Or Apps, but System fits better for profile
+        keywords: ['profile', 'user', 'account', 'me'],
+        action: () => router.push('/profile')
+    })
+
+    register({
+        id: 'nav-inbox',
+        label: 'Go to Inbox',
+        icon: '📥',
+        section: 'Apps',
+        keywords: ['inbox', 'messages', 'mail', 'communication'],
+        action: () => router.push('/inbox')
+    })
+
+    register({
+        id: 'nav-users',
+        label: 'Go to User Directory',
+        icon: '👥',
+        section: 'Apps',
+        keywords: ['users', 'directory', 'people', 'team'],
+        action: () => router.push('/users')
     })
 
     register({
@@ -60,6 +87,16 @@ export default defineNuxtPlugin((nuxtApp) => {
         section: 'System',
         keywords: ['admin', 'panel', 'management', 'settings'],
         action: () => router.push('/admin'),
+        adminOnly: true
+    })
+
+    register({
+        id: 'nav-admin-tenant',
+        label: 'Go to Tenant Profile',
+        icon: '🏢',
+        section: 'System',
+        keywords: ['tenant', 'organization', 'company', 'profile'],
+        action: () => router.push('/admin/tenant'),
         adminOnly: true
     })
 
@@ -97,6 +134,15 @@ export default defineNuxtPlugin((nuxtApp) => {
         section: 'Apps',
         keywords: ['quotes', 'inspiration', 'wisdom'],
         action: () => router.push('/quotes')
+    })
+
+    register({
+        id: 'nav-projects',
+        label: 'Go to Projects',
+        icon: '📁',
+        section: 'Apps',
+        keywords: ['projects', 'management', 'tracking', 'strategic'],
+        action: () => router.push('/admin/projects')
     })
 
     register({

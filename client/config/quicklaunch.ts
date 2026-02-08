@@ -33,12 +33,12 @@ export const adminQuickLaunch: QuickLaunchItem[] = [
     {
         label: 'User Management',
         icon: 'users',
-        path: '/admin/users'
+        path: '/admin?tab=users'
     },
     {
         label: 'System Settings',
         icon: 'cog',
-        path: '/settings/system'
+        path: '/admin?tab=system'
     },
     ...memberQuickLaunch
 ]

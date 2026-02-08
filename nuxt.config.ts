@@ -13,6 +13,8 @@ export default defineNuxtConfig({
   srcDir: 'client',
   serverDir: 'server',
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
       title: 'Headquarters | ILYTAT Digital Office',
       link: [

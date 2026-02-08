@@ -58,6 +58,7 @@ export interface Quote {
     source?: string | null;
     tags?: string[];
     notes?: string | null;
+    isFavorite?: boolean;
 }
 
 export interface UserProfile {
@@ -68,6 +69,7 @@ export interface UserProfile {
     role?: 'admin' | 'member'; // Deprecated in favor of roles array, but kept for backward compatibility
     roles?: ('admin' | 'member' | 'viewer')[];
     tenantId?: string; // 'ilytat' or other company IDs
+    bio?: string | null; // User autobiography/about me
     createdAt: Date | any;
 }
 
@@ -161,6 +163,7 @@ export interface InboxItem {
     subject: string
     body: string
     from: string          // "System", "Finance", or User Name
+    fromId?: string       // UID of sender (if user)
     to: string            // User ID
     timestamp: Date | any // Firestore Timestamp
     read: boolean
@@ -168,6 +171,15 @@ export interface InboxItem {
     type: 'system' | 'message' | 'alert'
     link?: string         // URL to jump to (e.g. /tasks/123)
     priority?: 'low' | 'normal' | 'high'
+    attachments?: {
+        type: 'task' | 'note' | 'link' | 'document' | 'transaction' | 'event'
+        id?: string
+        title: string
+        url?: string
+        key?: string
+        amount?: number
+        date?: string
+    }[]
 }
 
 // Command Center
@@ -181,6 +193,19 @@ export interface CommandItem {
     shortcut?: string[]
     external?: boolean
     adminOnly?: boolean
+}
+
+export interface Project {
+    id: string
+    name: string
+    description?: string
+    status: 'active' | 'on-hold' | 'completed' | 'archived'
+    tenantId: string
+    createdAt: Date | any
+    updatedAt: Date | any
+    // Future-proofing
+    tags?: string[]
+    members?: string[] // User UIDs
 }
 
 // Task Groups (Templates)

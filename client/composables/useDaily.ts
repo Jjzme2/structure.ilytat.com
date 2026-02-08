@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import type { Quote, Task, ImportantDate } from '~/types'
+import { useTasksStore } from '~/stores/tasks'
 
 export interface DailySnapshot {
     quote: Quote | null
@@ -28,10 +29,12 @@ export const useDaily = () => {
         try {
             const date = todayStr.value
 
+            const store = useTasksStore()
+
             // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
             const tasksQuery = query(
-                collection(db, 'tasks'),
+                collection(db, store.collectionPath),
                 where('userId', '==', user.value.uid)
             )
             const datesQuery = query(

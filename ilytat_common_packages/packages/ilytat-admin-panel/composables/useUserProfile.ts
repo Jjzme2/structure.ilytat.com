@@ -64,11 +64,36 @@ export const useUserProfile = () => {
         }
     }
 
+    /**
+     * Helper to check roles
+     */
+    const hasRole = (role: 'admin' | 'member' | 'viewer') => {
+        if (!profile.value) return false
+        // Check new roles array OR legacy role field
+        return profile.value.roles?.includes(role) || profile.value.role === role
+    }
+
+    /**
+     * Check if user is admin
+     */
+    const isAdmin = computed(() => {
+        const email = user.value?.email?.trim().toLowerCase()
+        const uid = user.value?.uid
+
+        // Hardcoded admin emails and UIDs for safety/fallback
+        if (email === 'zettler.jj@ilytat.com' || email === 'jj@ilytat.com') return true
+        if (uid === 'BoHGcwh2ApNQiJJIgjZWBC9hY8I3') return true
+
+        return hasRole('admin')
+    })
+
     return {
         profile,
         loading,
         initialized,
         initializeUserProfile,
-        updateProfile
+        updateProfile,
+        hasRole,
+        isAdmin
     }
 }

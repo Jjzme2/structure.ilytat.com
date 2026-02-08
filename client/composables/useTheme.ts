@@ -1,3 +1,6 @@
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { useCurrentUser, useDocument, useFirestore } from 'vuefire'
+
 export const useTheme = () => {
 
     const themes = {
@@ -273,9 +276,37 @@ export const useTheme = () => {
         }
     }
 
+    const user = useCurrentUser()
+    const db = useFirestore()
+
+    // Firestore Integration
+    const params = computed(() => {
+        if (!user.value) return null
+        return {
+            uid: user.value.uid
+        }
+    })
+
+    const themeDocRef = computed(() =>
+        params.value ? doc(db, 'users', params.value.uid, 'userPrefs', 'theme') : null
+    )
+
+    const { data: remoteTheme } = useDocument(themeDocRef)
+
+    // Sync remote theme to local state when it changes (and is valid)
+    watch(remoteTheme, (val) => {
+        if (val && val.favorite && themes[val.favorite as keyof typeof themes]) {
+            // Only apply if different to avoid redundant updates causing loops if not careful
+            // We pass false to persist to avoid writing back what we just read
+            if (currentTheme.value !== val.favorite) {
+                applyTheme(val.favorite, false)
+            }
+        }
+    })
+
     const currentTheme = useState('theme', () => 'default')
 
-    const applyTheme = (themeName: string) => {
+    const applyTheme = (themeName: string, persistToFirestore = true) => {
         if (!themes[themeName as keyof typeof themes]) return
 
         const root = document.documentElement
@@ -289,16 +320,24 @@ export const useTheme = () => {
         root.classList.add(themes[themeName as keyof typeof themes].class)
         currentTheme.value = themeName
 
-        // Persist to local storage
+        // Persist to local storage (Always)
         localStorage.setItem('hq-theme', themeName)
+
+        // Persist to Firestore (Optional / If User Exists)
+        if (persistToFirestore && user.value && themeDocRef.value) {
+            setDoc(themeDocRef.value, {
+                favorite: themeName,
+                updatedAt: serverTimestamp()
+            }, { merge: true }).catch(console.error)
+        }
     }
 
     const initTheme = () => {
         const savedTheme = localStorage.getItem('hq-theme')
         if (savedTheme && themes[savedTheme as keyof typeof themes]) {
-            applyTheme(savedTheme)
+            applyTheme(savedTheme, false) // Don't write back to DB on init, just load cache
         } else {
-            applyTheme('default')
+            applyTheme('default', false)
         }
     }
 

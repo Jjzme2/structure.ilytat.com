@@ -35,11 +35,11 @@ const confidenceColor = computed(() => {
 </script>
 
 <template>
-  <div v-if="briefing" class="max-w-3xl mx-auto pb-20 animate-fade-in relative z-10">
+  <div v-if="briefing" class="max-w-3xl mx-auto pb-20 relative z-10">
     
     <!-- Navigation Back -->
-    <NuxtLink to="/intelligence" class="inline-flex items-center gap-2 text-slate-500 hover:text-white mb-8 transition-colors group">
-      <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Intelligence
+    <NuxtLink to="/documents" class="inline-flex items-center gap-2 text-slate-500 hover:text-white mb-8 transition-colors group">
+      <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Knowledge Base
     </NuxtLink>
 
     <!-- Official Memo Container -->
@@ -109,12 +109,4 @@ const confidenceColor = computed(() => {
 </template>
 
 <style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 </style>

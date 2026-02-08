@@ -2,16 +2,48 @@
 import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { signOut } from 'firebase/auth'
 import { config } from '~/config'
+import { useTenant } from '~/composables/useTenant'
+import { useDevice } from '~/composables/useDevice'
+import MessageUserModal from '~/components/users/MessageUserModal.vue'
+import { useMessageModal } from '~/composables/useMessageModal'
+import { useToast } from '~/composables/useToast'
+import type { UserProfile, InboxItem } from '~/types'
+import { useUserProfile } from '~/composables/useUserProfile'
+
+const { isDesktop } = useDevice()
 
 const user = useCurrentUser()
 const auth = useFirebaseAuth()
 const router = useRouter()
+const { isAdmin: profileIsAdmin } = useUserProfile()
 const { activeModules } = useModules()
 const { initTheme, themes, currentTheme, applyTheme } = useTheme()
 const { isOpen } = useCommandPalette()
+const { scope } = useTenant()
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 const isInboxOpen = ref(false)
+const { error } = useToast()
+
+// Message Modal State
+const { isOpen: isMessageModalOpen, recipient: messageRecipient, initialSubject: messageInitialSubject, open: openMessageModal, close: closeMessageModal } = useMessageModal()
+
+const handleReply = (msg: InboxItem) => {
+  if (!msg.fromId) {
+    error('Cannot reply: Original sender ID not found (message predates this feature).')
+    return
+  }
+
+  const recipient = {
+    uid: msg.fromId,
+    displayName: msg.from,
+    email: null,
+    createdAt: new Date()
+  } as UserProfile
+
+  const subject = msg.subject.startsWith('Re:') ? msg.subject : `Re: ${msg.subject}`
+  openMessageModal(recipient, subject)
+}
 
 // Initialize session timeout monitoring
 useSessionTimeout()
@@ -26,14 +58,10 @@ const logout = async () => {
 const handleScroll = () => {
   isScrolled.value = window.scrollY > config.ui.scrollThreshold
 }
+useEventListener(window, 'scroll', handleScroll)
 
 onMounted(() => {
   initTheme()
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
 })
 
 watch(user, async (currentUser, prevUser) => {
@@ -42,15 +70,9 @@ watch(user, async (currentUser, prevUser) => {
   }
 })
 
-const isAdmin = ref(false)
-watch(user, async (newUser) => {
-  if (newUser) {
-    const token = await newUser.getIdTokenResult()
-    isAdmin.value = token.claims.role === 'admin' || token.claims.admin === true
-  } else {
-    isAdmin.value = false
-  }
-}, { immediate: true })
+watch(isDesktop, (val) => {
+  if (val) isMenuOpen.value = false
+})
 
 watch(() => router.currentRoute.value.path, () => {
   isMenuOpen.value = false
@@ -61,11 +83,21 @@ watch(() => router.currentRoute.value.path, () => {
   <div
     class="min-h-screen bg-bg-primary text-text-primary font-sans selection:bg-accent-primary selection:text-bg-primary pb-12 transition-colors duration-500">
     <UiToastContainer />
-    <LayoutInboxPanel :is-open="isInboxOpen" @close="isInboxOpen = false" />
+    <UiToastContainer />
+    <LayoutInboxPanel :is-open="isInboxOpen" @close="isInboxOpen = false" @reply="handleReply" />
+    <MessageUserModal :is-open="isMessageModalOpen" :recipient="messageRecipient"
+      :initial-subject="messageInitialSubject" @close="isMessageModalOpen = false" @sent="isMessageModalOpen = false" />
     <!-- Glassmorphism Navbar Container -->
-    <div v-if="user" class="fixed top-0 w-full z-50 flex justify-center pt-4 md:pt-6 px-2 md:px-4">
-      <nav class="max-w-5xl w-full glass-nav rounded-2xl md:rounded-3xl px-4 md:px-5 transition-all duration-500"
-        :class="isScrolled ? 'py-1.5 md:py-2' : 'py-2 md:py-4'">
+    <!-- Glassmorphism Navbar Container -->
+    <div v-if="user" class="fixed top-0 w-full z-50 flex justify-center pt-4 md:pt-6 px-2 md:px-4 pointer-events-none">
+      <nav
+        class="max-w-[1600px] w-full rounded-2xl md:rounded-3xl px-4 md:px-5 transition-all duration-500 border pointer-events-auto"
+        :class="[
+          isScrolled ? 'py-1.5 md:py-2' : 'py-2 md:py-4',
+          scope === 'company'
+            ? 'bg-slate-900/60 backdrop-blur-xl border-indigo-500/10 shadow-[0_4px_30px_rgba(99,102,241,0.1)]'
+            : 'bg-slate-900/60 backdrop-blur-xl border-emerald-500/10 shadow-[0_4px_30px_rgba(16,185,129,0.1)]'
+        ]">
         <div class="flex items-center justify-between h-full">
           <!-- Logo Section -->
           <NuxtLink to="/" class="group flex items-center gap-2 md:gap-3">
@@ -79,10 +111,10 @@ watch(() => router.currentRoute.value.path, () => {
           </NuxtLink>
 
           <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center gap-4">
+          <div class="hidden md:flex items-center gap-6">
             <!-- Search Hint / Command Trigger -->
             <button @click="isOpen = true"
-              class="group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-text-primary glass-pill transition-all duration-300 cursor-pointer mr-2">
+              class="group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-muted hover:text-text-primary glass-pill transition-all duration-300 cursor-pointer">
               <svg class="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -96,6 +128,10 @@ watch(() => router.currentRoute.value.path, () => {
                   class="min-w-[1.2em] px-1 py-0.5 rounded border border-current text-[10px] font-mono flex items-center justify-center">K</kbd>
               </div>
             </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="hidden md:block w-px h-8 bg-gradient-to-b from-transparent via-slate-700 to-transparent mx-2">
           </div>
 
           <!-- User Controls -->
@@ -127,7 +163,39 @@ watch(() => router.currentRoute.value.path, () => {
                     <p class="text-sm font-medium text-text-primary truncate">{{ user?.email }}</p>
                   </div>
 
-                  <NuxtLink v-if="isAdmin" to="/admin"
+                  <NuxtLink to="/documents"
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/docs">
+                    <svg class="w-4 h-4 text-slate-500 group-hover/docs:text-pink-400 transition-colors" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Knowledge Base
+                  </NuxtLink>
+
+                  <NuxtLink to="/inbox"
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/inbox">
+                    <svg class="w-4 h-4 text-slate-500 group-hover/inbox:text-indigo-400 transition-colors" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    Inbox
+                  </NuxtLink>
+
+                  <NuxtLink to="/admin/projects"
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/projects">
+                    <svg class="w-4 h-4 text-slate-500 group-hover/projects:text-violet-400 transition-colors"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    Projects
+                  </NuxtLink>
+
+                  <div class="my-1 border-t border-white/5"></div>
+
+                  <NuxtLink v-if="profileIsAdmin" to="/admin"
                     class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left group/admin">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -174,7 +242,7 @@ watch(() => router.currentRoute.value.path, () => {
     </div>
 
     <!-- Main Content Area -->
-    <main class="pt-20 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+    <main class="pt-20 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto">
       <slot />
     </main>
   </div>

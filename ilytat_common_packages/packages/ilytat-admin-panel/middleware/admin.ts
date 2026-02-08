@@ -3,7 +3,7 @@ import { getCurrentUser } from 'vuefire';
 export default defineNuxtRouteMiddleware(async (to: any, from: any) => {
     const user = await getCurrentUser()
 
-    if (!user) return navigateTo('/login') && console.log('No user');
+    if (!user) return navigateTo('/login');
 
     try {
         const token = await user.getIdTokenResult()
