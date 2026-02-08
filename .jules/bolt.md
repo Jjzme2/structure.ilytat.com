@@ -1,0 +1,3 @@
+## 2024-05-23 - [Firestore Read Optimization in useDaily]
+**Learning:** Found a critical performance anti-pattern in `client/composables/useDaily.ts`. The code was fetching the entire `tasks` collection for the user (potentially thousands of docs) in a `Promise.all` block, but then immediately discarding/ignoring the result and re-fetching a specific subset (focus tasks) later. This wasted bandwidth and Firestore read quotas.
+**Action:** Always scrutinize `Promise.all` blocks in data fetching logic to ensure every request is necessary and optimized. Removed the broad query and moved the specific optimized query into the parallel block.
