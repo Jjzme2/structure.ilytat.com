@@ -63,4 +63,17 @@ describe('useDaily Composable', () => {
             expect.objectContaining({ field: 'focusDate', op: '==', val: todayStr.value })
         )
     })
+
+    it('should NOT fetch all tasks (unoptimized query)', async () => {
+        const { fetchDaily } = useDaily()
+        await fetchDaily()
+
+        const calls = (firestore.query as any).mock.calls
+        const unoptimizedCall = calls.find((args: any[]) =>
+            args[0] === 'tasks' &&
+            args.length === 2 && // collection + 1 where clause
+            args[1].field === 'userId'
+        )
+        expect(unoptimizedCall).toBeUndefined()
+    })
 })
