@@ -4,20 +4,25 @@
       <input 
         type="file" 
         @change="handleUpload" 
-        class="hidden" 
+        class="sr-only peer"
         id="document-upload" 
         :disabled="uploading"
       >
       <label 
         for="document-upload" 
+        @dragover.prevent="isDragging = true"
+        @dragleave.prevent="isDragging = false"
+        @drop.prevent="handleDrop"
         :class="[
-          'relative block w-full text-center py-8 px-4 border-2 border-dashed rounded-2xl transition-all duration-300 font-medium cursor-pointer overflow-hidden',
+          'relative block w-full text-center py-8 px-4 border-2 border-dashed rounded-2xl transition-all duration-300 font-medium cursor-pointer overflow-hidden outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 peer-focus:border-indigo-500',
           uploading 
             ? 'border-indigo-500/50 bg-indigo-500/5 text-indigo-400 cursor-not-allowed' 
-            : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:text-white hover:border-pink-500 hover:bg-slate-900 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.1)]'
+            : isDragging
+              ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 scale-[1.02] shadow-[0_0_20px_rgba(99,102,241,0.2)]'
+              : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:text-white hover:border-pink-500 hover:bg-slate-900 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.1)]'
         ]"
       >
-        <div class="relative z-10 flex flex-col items-center gap-3">
+        <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none">
           <div v-if="uploading" class="animate-spin text-2xl">
             ⏳
           </div>
@@ -55,14 +60,29 @@ import { useR2 } from '~/composables/useR2'
 
 const { uploadDocument, uploading, error } = useR2()
 
+const isDragging = ref(false)
+
+const processFile = async (file: File) => {
+  await uploadDocument(file)
+}
+
 const handleUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (!input.files?.length) return
   
   const file = input.files[0]
   if (file) {
-    await uploadDocument(file)
+    await processFile(file)
   }
   input.value = '' // Reset input
+}
+
+const handleDrop = async (event: DragEvent) => {
+  if (uploading.value) return
+  isDragging.value = false
+  const file = event.dataTransfer?.files[0]
+  if (file) {
+    await processFile(file)
+  }
 }
 </script>
