@@ -2,6 +2,7 @@
 import { useBriefingsStore } from '~/stores/briefings'
 import type { Briefing } from '~/types'
 import { marked } from 'marked'
+import DOMPurify from 'isomorphic-dompurify'
 
 const route = useRoute()
 const briefingsStore = useBriefingsStore()
@@ -13,7 +14,8 @@ const briefing = computed(() =>
 
 const compiledMarkdown = computed(() => {
   if (!briefing.value?.content) return ''
-  return marked(briefing.value.content)
+  const rawHtml = marked.parse(briefing.value.content) as string
+  return DOMPurify.sanitize(rawHtml)
 })
 
 const formatDate = (dateStr: string) => {

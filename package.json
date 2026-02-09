@@ -24,6 +24,7 @@
     "@types/marked": "^5.0.2",
     "firebase": "^12.9.0",
     "firebase-admin": "^13.6.1",
+    "isomorphic-dompurify": "^3.0.0-rc.2",
     "marked": "^17.0.1",
     "mime-types": "^3.0.2",
     "nuxt": "^4.3.0",
