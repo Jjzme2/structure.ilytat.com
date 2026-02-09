@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
+import { doc, getDoc, setDoc, collection, getDocs, query, where } from 'firebase/firestore'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import type { Quote, Task, ImportantDate } from '~/types'
 
@@ -30,10 +30,16 @@ export const useDaily = () => {
 
             // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
-            const tasksQuery = query(
+
+            // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
+            // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
+            const focusTasksQuery = query(
                 collection(db, 'tasks'),
-                where('userId', '==', user.value.uid)
+                where('userId', '==', user.value.uid),
+                where('status', '==', 'focus'),
+                where('focusDate', '==', date)
             )
+
             const datesQuery = query(
                 collection(db, 'dates'),
                 where('userId', '==', user.value.uid),
@@ -42,9 +48,9 @@ export const useDaily = () => {
             const metaRef = doc(db, 'metadata', 'system')
 
             // Fetch everything in parallel
-            const [dailySnap, tasksSnap, datesSnap, metaSnap] = await Promise.all([
+            const [dailySnap, focusTasksSnap, datesSnap, metaSnap] = await Promise.all([
                 getDoc(dailyRef),
-                getDocs(tasksQuery),
+                getDocs(focusTasksQuery),
                 getDocs(datesQuery),
                 getDoc(metaRef)
             ])
@@ -82,16 +88,7 @@ export const useDaily = () => {
             }
 
             // 2. Fetch Tasks Summary
-            // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
-            // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
-            const tasksQuery = query(
-                collection(db, 'tasks'),
-                where('userId', '==', user.value.uid),
-                where('status', '==', 'focus'),
-                where('focusDate', '==', date)
-            )
-            const tasksSnap = await getDocs(tasksQuery)
-            const todayTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
+            const todayTasks = focusTasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
 
             const focusTasks = todayTasks
                 .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))
