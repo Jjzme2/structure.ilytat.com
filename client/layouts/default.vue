@@ -10,7 +10,7 @@ const { activeModules } = useModules()
 const { initTheme, themes, currentTheme, applyTheme } = useTheme()
 const { isOpen } = useCommandPalette()
 const isMenuOpen = ref(false)
-const isScrolled = ref(false)
+const { isScrolled } = useScrollState()
 const isInboxOpen = ref(false)
 
 // Initialize session timeout monitoring
@@ -23,17 +23,8 @@ const logout = async () => {
   }
 }
 
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > config.ui.scrollThreshold
-}
-
 onMounted(() => {
   initTheme()
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
 })
 
 watch(user, async (currentUser, prevUser) => {
