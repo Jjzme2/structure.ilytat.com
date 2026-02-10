@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useBriefingsStore } from '~/stores/briefings'
 import type { Briefing } from '~/types'
-import { marked } from 'marked'
 
 const route = useRoute()
 const briefingsStore = useBriefingsStore()
@@ -13,7 +12,7 @@ const briefing = computed(() =>
 
 const compiledMarkdown = computed(() => {
   if (!briefing.value?.content) return ''
-  return marked(briefing.value.content)
+  return renderSafeMarkdown(briefing.value.content)
 })
 
 const formatDate = (dateStr: string) => {
