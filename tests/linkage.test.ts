@@ -28,6 +28,13 @@ vi.mock('~/composables/useActivityLog', () => ({
     }))
 }))
 
+vi.mock('~/composables/useTenant', () => ({
+    useTenant: vi.fn(() => ({
+        scope: { value: 'personal' },
+        tenantId: { value: 'test-tenant' }
+    }))
+}))
+
 describe('Tasks Store - Strategic Linkage', () => {
     beforeEach(() => {
         setActivePinia(createPinia())

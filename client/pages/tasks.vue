@@ -35,7 +35,7 @@
 
                 <!-- Export Menu -->
                 <div class="relative group/export">
-                    <button
+                    <button aria-label="Export tasks"
                         class="flex items-center gap-2 p-2.5 rounded-xl bg-glass border border-glass text-slate-400 hover:text-white transition-all">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -80,6 +80,7 @@
                 <!-- View Toggle -->
                 <div class="flex p-1 bg-glass border border-glass rounded-xl">
                     <button @click="viewMode = 'list'" class="p-2.5 rounded-lg transition-all"
+                        aria-label="Switch to list view" :aria-pressed="viewMode === 'list'"
                         :class="viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -87,6 +88,7 @@
                         </svg>
                     </button>
                     <button @click="viewMode = 'kanban'" class="p-2.5 rounded-lg transition-all"
+                        aria-label="Switch to kanban view" :aria-pressed="viewMode === 'kanban'"
                         :class="viewMode === 'kanban' ? 'bg-purple-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -145,6 +147,7 @@
                     :class="{ 'opacity-60 grayscale-[0.5]': task.status === 'done' }">
                     <!-- Status Toggle -->
                     <button @click="toggleTask(task)"
+                        :aria-label="task.status === 'done' ? 'Mark as not done' : 'Mark as done'"
                         class="flex-shrink-0 mt-1 h-8 w-8 rounded-xl border-2 flex items-center justify-center transition-all duration-500 relative overflow-hidden"
                         :class="task.status === 'done' ? 'bg-indigo-600 border-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'border-slate-700 hover:border-indigo-400'">
                         <svg v-if="task.status === 'done'" class="w-5 h-5 text-white animate-scale-in" fill="none"
@@ -177,7 +180,7 @@
                         </p>
                     </div>
 
-                    <button @click="deleteTask(task.id)"
+                    <button @click="deleteTask(task.id)" aria-label="Delete task"
                         class="opacity-0 group-hover:opacity-100 mt-1 h-10 w-10 flex items-center justify-center rounded-xl bg-slate-800 text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 transition-all duration-300">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -217,10 +220,10 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleAddToFocus(task.id)"
+                                <button @click="handleAddToFocus(task.id)" aria-label="Add to Focus"
                                     class="p-1.5 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/40 text-xs"
                                     title="Add to Focus">⭐</button>
-                                <button @click="deleteTask(task.id)"
+                                <button @click="deleteTask(task.id)" aria-label="Delete task"
                                     class="p-1.5 rounded-lg bg-rose-600/20 text-rose-400 hover:bg-rose-600/40 text-xs"
                                     title="Delete">🗑️</button>
                             </div>
@@ -262,10 +265,10 @@
                                 <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             </div>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleMoveToDoing(task.id)"
+                                <button @click="handleMoveToDoing(task.id)" aria-label="Start working"
                                     class="p-1.5 rounded-lg bg-amber-600/20 text-amber-400 hover:bg-amber-600/40 text-xs"
                                     title="Start Working">▶️</button>
-                                <button @click="handleRemoveFromFocus(task.id)"
+                                <button @click="handleRemoveFromFocus(task.id)" aria-label="Remove from focus"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Remove">↩️</button>
                             </div>
@@ -299,10 +302,10 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleMarkDone(task.id)"
+                                <button @click="handleMarkDone(task.id)" aria-label="Mark as done"
                                     class="p-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40 text-xs"
                                     title="Done">✓</button>
-                                <button @click="handleMoveBack(task.id)"
+                                <button @click="handleMoveBack(task.id)" aria-label="Move back"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Back">↩️</button>
                             </div>
@@ -334,7 +337,7 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-500 line-through">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleArchive(task.id)"
+                                <button @click="handleArchive(task.id)" aria-label="Archive task"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Archive">📦</button>
                             </div>
