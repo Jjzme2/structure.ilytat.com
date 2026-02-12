@@ -4,14 +4,14 @@
       <input 
         type="file" 
         @change="handleUpload" 
-        class="hidden" 
+        class="sr-only peer"
         id="document-upload" 
         :disabled="uploading"
       >
       <label 
         for="document-upload" 
         :class="[
-          'relative block w-full text-center py-8 px-4 border-2 border-dashed rounded-2xl transition-all duration-300 font-medium cursor-pointer overflow-hidden',
+          'relative block w-full text-center py-8 px-4 border-2 border-dashed rounded-2xl transition-all duration-300 font-medium cursor-pointer overflow-hidden peer-focus:ring-2 peer-focus:ring-indigo-500 peer-focus:border-transparent',
           uploading 
             ? 'border-indigo-500/50 bg-indigo-500/5 text-indigo-400 cursor-not-allowed' 
             : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:text-white hover:border-pink-500 hover:bg-slate-900 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.1)]'
