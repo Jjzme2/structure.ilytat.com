@@ -63,4 +63,19 @@ describe('useDaily Composable', () => {
             expect.objectContaining({ field: 'focusDate', op: '==', val: todayStr.value })
         )
     })
+
+    it('should NOT fetch all tasks for user (avoid broad query)', async () => {
+        const { fetchDaily } = useDaily()
+        await fetchDaily()
+
+        // Ensure we don't have a query call that is JUST collection and userId
+        const calls = (firestore.query as any).mock.calls
+        const broadQuery = calls.find((args: any[]) => {
+            return args[0] === 'tasks' &&
+                   args.length === 2 && // collection + 1 where clause
+                   args[1].field === 'userId' &&
+                   args[1].val === 'test-user'
+        })
+        expect(broadQuery).toBeUndefined()
+    })
 })
