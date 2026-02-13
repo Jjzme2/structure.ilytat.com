@@ -84,14 +84,14 @@ export const useDaily = () => {
             // 2. Fetch Tasks Summary
             // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
             // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
-            const tasksQuery = query(
+            const focusTasksQuery = query(
                 collection(db, 'tasks'),
                 where('userId', '==', user.value.uid),
                 where('status', '==', 'focus'),
                 where('focusDate', '==', date)
             )
-            const tasksSnap = await getDocs(tasksQuery)
-            const todayTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
+            const focusTasksSnap = await getDocs(focusTasksQuery)
+            const todayTasks = focusTasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
 
             const focusTasks = todayTasks
                 .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0))

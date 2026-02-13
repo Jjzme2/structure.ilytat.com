@@ -32,3 +32,26 @@ export const requireAuth = async (event: any) => {
         });
     }
 };
+
+/**
+ * Validates that the requester has admin privileges.
+ * Checks for 'admin' role, 'admin' boolean claim, or specific legacy emails.
+ * @param requester The decoded token object from requireAuth
+ */
+export const requireAdmin = (requester: any) => {
+    // Legacy support: specific emails are always admins
+    const legacyAdmins = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
+    if (requester.email && legacyAdmins.includes(requester.email)) {
+        return;
+    }
+
+    // Check for admin role or claim
+    if (requester.admin === true || requester.role === 'admin') {
+        return;
+    }
+
+    throw createError({
+        statusCode: 403,
+        statusMessage: 'Forbidden: Admin access required',
+    });
+};
