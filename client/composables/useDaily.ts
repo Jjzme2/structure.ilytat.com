@@ -30,10 +30,6 @@ export const useDaily = () => {
 
             // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
-            const tasksQuery = query(
-                collection(db, 'tasks'),
-                where('userId', '==', user.value.uid)
-            )
             const datesQuery = query(
                 collection(db, 'dates'),
                 where('userId', '==', user.value.uid),
@@ -42,9 +38,8 @@ export const useDaily = () => {
             const metaRef = doc(db, 'metadata', 'system')
 
             // Fetch everything in parallel
-            const [dailySnap, tasksSnap, datesSnap, metaSnap] = await Promise.all([
+            const [dailySnap, datesSnap, metaSnap] = await Promise.all([
                 getDoc(dailyRef),
-                getDocs(tasksQuery),
                 getDocs(datesQuery),
                 getDoc(metaRef)
             ])
