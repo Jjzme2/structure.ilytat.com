@@ -32,3 +32,21 @@ export const requireAuth = async (event: any) => {
         });
     }
 };
+
+export const requireAdmin = async (event: any) => {
+    const user = await requireAuth(event);
+
+    // Check hardcoded emails (legacy/god mode)
+    // TODO: Migrate these users to use claims and remove hardcoded checks
+    const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
+    if (user.email && adminEmails.includes(user.email)) {
+        return user;
+    }
+
+    // Check claims
+    if (user.admin === true || user.role === 'admin') {
+        return user;
+    }
+
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' });
+}

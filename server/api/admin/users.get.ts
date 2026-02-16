@@ -1,17 +1,9 @@
 import { getAuth } from 'firebase-admin/auth'
-import { requireAuth } from '../../utils/auth'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-    const requester = await requireAuth(event)
+    const requester = await requireAdmin(event)
     const auth = getAuth()
-
-    // Verify requester is admin
-    if (requester.email !== 'jj@ilytat.com' && requester.email !== 'admin@ilytat.com' && requester.email !== 'zettler.jj@ilytat.com') {
-        const token = await auth.verifyIdToken((requester as any).uid || requester.uid)
-        if (!token.admin && token.role !== 'admin') {
-            throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
-        }
-    }
 
     try {
         // List all users (limit to 1000 for now)

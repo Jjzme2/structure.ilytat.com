@@ -1,8 +1,8 @@
 import { getAuth } from 'firebase-admin/auth'
-import { requireAuth } from '../../utils/auth'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-    const requester = await requireAuth(event)
+    const requester = await requireAdmin(event)
     const auth = getAuth()
     const body = await readBody(event)
 
@@ -10,14 +10,6 @@ export default defineEventHandler(async (event) => {
 
     if (uid === undefined || disabled === undefined) {
         throw createError({ statusCode: 400, statusMessage: 'UID and disabled status are required' })
-    }
-
-    // Verify requester is admin
-    if (requester.email !== 'jj@ilytat.com' && requester.email !== 'admin@ilytat.com' && requester.email !== 'zettler.jj@ilytat.com') {
-        const token = await auth.verifyIdToken((requester as any).uid || requester.uid)
-        if (!token.admin && token.role !== 'admin') {
-            throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
-        }
     }
 
     try {
