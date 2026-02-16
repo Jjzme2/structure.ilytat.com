@@ -79,14 +79,14 @@
 
                 <!-- View Toggle -->
                 <div class="flex p-1 bg-glass border border-glass rounded-xl">
-                    <button @click="viewMode = 'list'" class="p-2.5 rounded-lg transition-all"
+                    <button @click="viewMode = 'list'" class="p-2.5 rounded-lg transition-all" aria-label="Switch to List View"
                         :class="viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                         </svg>
                     </button>
-                    <button @click="viewMode = 'kanban'" class="p-2.5 rounded-lg transition-all"
+                    <button @click="viewMode = 'kanban'" class="p-2.5 rounded-lg transition-all" aria-label="Switch to Kanban View"
                         :class="viewMode === 'kanban' ? 'bg-purple-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,16 +105,16 @@
             <div
                 class="relative flex flex-col gap-3 bg-glass backdrop-blur-xl border border-glass rounded-2xl p-2 shadow-xl transition-all">
                 <div class="flex gap-3">
-                    <input type="text" v-model="newTaskTitle"
+                    <input type="text" v-model="newTaskTitle" aria-label="New Task Title"
                         class="flex-1 bg-transparent border-none text-slate-100 placeholder-slate-500 focus:ring-0 py-2 px-4 text-lg font-medium outline-none"
                         placeholder="New Action Item..." required />
-                    <select v-model="newTaskCategory"
+                    <select v-model="newTaskCategory" aria-label="New Task Category"
                         class="w-40 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 text-sm outline-none focus:border-purple-500">
                         <option :value="null">No category</option>
                         <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.emoji }} {{ cat.label }}
                         </option>
                     </select>
-                    <select v-model="newTaskOKRLink"
+                    <select v-model="newTaskOKRLink" aria-label="Link to Objective"
                         class="w-48 bg-slate-900 border border-slate-800 text-slate-300 rounded-xl px-3 text-sm outline-none focus:border-purple-500">
                         <option :value="null">Strategic Link: None</option>
                         <optgroup v-for="okr in okrs" :key="okr.id" :label="okr.objective">
@@ -130,7 +130,7 @@
                 </div>
                 <!-- Optional Description -->
                 <div class="px-4 pb-2">
-                    <input v-model="newTaskDescription" type="text"
+                    <input v-model="newTaskDescription" type="text" aria-label="New Task Description"
                         class="w-full bg-transparent border-none text-slate-400 placeholder-slate-600 text-sm focus:ring-0 p-0 outline-none"
                         placeholder="Add a description (optional)..." />
                 </div>
@@ -144,7 +144,7 @@
                     class="group flex items-start gap-6 p-5 bg-glass border border-glass rounded-2xl hover:bg-glass/80 hover:border-accent-primary/30 transition-all duration-300 shadow-lg"
                     :class="{ 'opacity-60 grayscale-[0.5]': task.status === 'done' }">
                     <!-- Status Toggle -->
-                    <button @click="toggleTask(task)"
+                    <button @click="toggleTask(task)" :aria-label="task.status === 'done' ? 'Mark as active' : 'Mark as done'"
                         class="flex-shrink-0 mt-1 h-8 w-8 rounded-xl border-2 flex items-center justify-center transition-all duration-500 relative overflow-hidden"
                         :class="task.status === 'done' ? 'bg-indigo-600 border-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'border-slate-700 hover:border-indigo-400'">
                         <svg v-if="task.status === 'done'" class="w-5 h-5 text-white animate-scale-in" fill="none"
@@ -177,7 +177,7 @@
                         </p>
                     </div>
 
-                    <button @click="deleteTask(task.id)"
+                    <button @click="deleteTask(task.id)" aria-label="Delete Task"
                         class="opacity-0 group-hover:opacity-100 mt-1 h-10 w-10 flex items-center justify-center rounded-xl bg-slate-800 text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 transition-all duration-300">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -217,10 +217,10 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleAddToFocus(task.id)"
+                                <button @click="handleAddToFocus(task.id)" aria-label="Add to Focus"
                                     class="p-1.5 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/40 text-xs"
                                     title="Add to Focus">⭐</button>
-                                <button @click="deleteTask(task.id)"
+                                <button @click="deleteTask(task.id)" aria-label="Delete Task"
                                     class="p-1.5 rounded-lg bg-rose-600/20 text-rose-400 hover:bg-rose-600/40 text-xs"
                                     title="Delete">🗑️</button>
                             </div>
@@ -262,10 +262,10 @@
                                 <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             </div>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleMoveToDoing(task.id)"
+                                <button @click="handleMoveToDoing(task.id)" aria-label="Start Working"
                                     class="p-1.5 rounded-lg bg-amber-600/20 text-amber-400 hover:bg-amber-600/40 text-xs"
                                     title="Start Working">▶️</button>
-                                <button @click="handleRemoveFromFocus(task.id)"
+                                <button @click="handleRemoveFromFocus(task.id)" aria-label="Remove from Focus"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Remove">↩️</button>
                             </div>
@@ -299,10 +299,10 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-200">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleMarkDone(task.id)"
+                                <button @click="handleMarkDone(task.id)" aria-label="Mark as Done"
                                     class="p-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40 text-xs"
                                     title="Done">✓</button>
-                                <button @click="handleMoveBack(task.id)"
+                                <button @click="handleMoveBack(task.id)" aria-label="Move Back to Focus"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Back">↩️</button>
                             </div>
@@ -334,7 +334,7 @@
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <span class="font-semibold text-slate-500 line-through">{{ task.title }}</span>
                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="handleArchive(task.id)"
+                                <button @click="handleArchive(task.id)" aria-label="Archive Task"
                                     class="p-1.5 rounded-lg bg-slate-600/20 text-slate-400 hover:bg-slate-600/40 text-xs"
                                     title="Archive">📦</button>
                             </div>
