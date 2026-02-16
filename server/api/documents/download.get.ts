@@ -19,7 +19,18 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent Path Traversal
+    if (key.includes('..') || key.startsWith('/')) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Invalid file key'
+        })
+    }
+
     const isInline = query.inline === 'true'
+
+    // Security: Prevent MIME Sniffing
+    setHeader(event, 'X-Content-Type-Options', 'nosniff')
 
     try {
         const command = new GetObjectCommand({
