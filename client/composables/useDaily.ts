@@ -31,6 +31,16 @@ export const useDaily = () => {
             // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
             // tasksQuery removed as it is redefined later for optimization
+
+            // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
+            // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
+            const tasksQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', user.value.uid),
+                where('status', '==', 'focus'),
+                where('focusDate', '==', date)
+            )
+
             const datesQuery = query(
                 collection(db, 'dates'),
                 where('userId', '==', user.value.uid),
@@ -78,15 +88,6 @@ export const useDaily = () => {
             }
 
             // 2. Fetch Tasks Summary
-            // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
-            // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
-            const tasksQuery = query(
-                collection(db, 'tasks'),
-                where('userId', '==', user.value.uid),
-                where('status', '==', 'focus'),
-                where('focusDate', '==', date)
-            )
-            const tasksSnap = await getDocs(tasksQuery)
             const todayTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Task[]
 
             const focusTasks = todayTasks
