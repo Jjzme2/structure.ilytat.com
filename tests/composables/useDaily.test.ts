@@ -51,7 +51,7 @@ describe('useDaily Composable', () => {
     })
 
     it('should fetch tasks with optimized query (status=focus and focusDate=today)', async () => {
-        const { fetchDaily, todayStr } = useDaily()
+        const { fetchDaily, todayStr, dailySnapshot } = useDaily()
 
         await fetchDaily()
 
@@ -62,5 +62,9 @@ describe('useDaily Composable', () => {
             expect.objectContaining({ field: 'status', op: '==', val: 'focus' }),
             expect.objectContaining({ field: 'focusDate', op: '==', val: todayStr.value })
         )
+
+        // Verify that the function completed successfully (tasksSnap was accessible)
+        expect(dailySnapshot.value).not.toBeNull()
+        expect(dailySnapshot.value?.tasks).toBeDefined()
     })
 })
