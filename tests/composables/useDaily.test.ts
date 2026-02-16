@@ -62,5 +62,19 @@ describe('useDaily Composable', () => {
             expect.objectContaining({ field: 'status', op: '==', val: 'focus' }),
             expect.objectContaining({ field: 'focusDate', op: '==', val: todayStr.value })
         )
+
+        // Verify optimized behavior
+        // getDocs is called for: tasks (specific), dates, user quotes, system quotes (fallback) -> Total 4
+        expect(firestore.getDocs).toHaveBeenCalledTimes(4)
+
+        // Verify that the broad query (just userId) was NOT called
+        const queryCalls = (firestore.query as any).mock.calls
+        const taskQueries = queryCalls.filter((args: any[]) => args[0] === 'tasks')
+
+        // Broad query has 2 args: collection, where(userId)
+        // Specific query has 4 args: collection, where(userId), where(status), where(focusDate)
+        const broadQueries = taskQueries.filter((args: any[]) => args.length === 2)
+
+        expect(broadQueries).toHaveLength(0)
     })
 })
