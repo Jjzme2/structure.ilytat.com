@@ -9,13 +9,24 @@ export interface R2File {
 
 export const useR2 = () => {
     const user = useCurrentUser()
-    const uploading = ref(false)
-    const loadingDocs = ref(false)
-    const error = ref<string | null>(null)
-    const documents = ref<R2File[]>([])
 
-    const fetchDocuments = async () => {
+    // Shared state for caching and cross-component updates
+    const documents = useState<R2File[]>('r2-documents', () => [])
+    const loadingDocs = useState<boolean>('r2-loading-docs', () => false)
+    const fetchedUserId = useState<string | null>('r2-fetched-user-id', () => null)
+
+    // Local state for specific actions
+    const uploading = ref(false)
+    const error = ref<string | null>(null)
+
+    const fetchDocuments = async (force = false) => {
         if (!user.value) return
+
+        // Optimized: Check cache before fetching
+        if (!force && fetchedUserId.value === user.value.uid) {
+            return
+        }
+
         loadingDocs.value = true
         error.value = null
         try {
@@ -29,6 +40,7 @@ export const useR2 = () => {
                 ...item,
                 filename: item.key.replace(/^documents\/\d+-/, '') // Cleanup timestamp prefix for display
             }))
+            fetchedUserId.value = user.value.uid
         } catch (e: any) {
             console.error('Failed to fetch documents', e)
             error.value = e.message
@@ -54,7 +66,7 @@ export const useR2 = () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-            await fetchDocuments() // Refresh list
+            await fetchDocuments(true) // Force refresh list to update UI immediately
         } catch (e: any) {
             console.error('Upload failed', e)
             error.value = e.message
