@@ -1,16 +1,10 @@
 import { getFirestore } from 'firebase-admin/firestore'
-import { requireAuth } from '../../utils/auth'
+import { requireAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-    const requester = await requireAuth(event)
+    const requester = await requireAdmin(event)
     const db = getFirestore()
     const method = event.method
-
-    // Verify admin access (simple check)
-    // In production, use robust claims check as in other endpoints
-    if (requester.email !== 'jj@ilytat.com' && requester.email !== 'admin@ilytat.com' && requester.email !== 'zettler.jj@ilytat.com') {
-        // throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
-    }
 
     const groupsColl = db.collection('companies').doc('ilytat').collection('taskGroups')
 

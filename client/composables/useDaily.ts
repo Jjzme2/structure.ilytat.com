@@ -30,6 +30,7 @@ export const useDaily = () => {
 
             // Define all queries and refs first
             const dailyRef = doc(db, `users/${user.value.uid}/daily/${date}`)
+            // tasksQuery removed as it is redefined later for optimization
 
             // OPTIMIZATION: Only fetch today's focus tasks to reduce read operations.
             // We skip fetching 'done' tasks as the done count is currently unused in the dashboard.
@@ -48,9 +49,8 @@ export const useDaily = () => {
             const metaRef = doc(db, 'metadata', 'system')
 
             // Fetch everything in parallel
-            const [dailySnap, tasksSnap, datesSnap, metaSnap] = await Promise.all([
+            const [dailySnap, datesSnap, metaSnap] = await Promise.all([
                 getDoc(dailyRef),
-                getDocs(tasksQuery),
                 getDocs(datesQuery),
                 getDoc(metaRef)
             ])
