@@ -24,6 +24,7 @@
         <div>
           <label for="email" class="sr-only">Email address</label>
           <input id="email" v-model="form.email" type="email" required placeholder="Email address"
+            :aria-invalid="!!error" :aria-describedby="error ? 'login-error' : undefined"
             class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
         </div>
         <div>
@@ -51,14 +52,14 @@
         </div>
 
         <div class="flex items-center justify-end">
-          <NuxtLink to="/forgot-password" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+          <NuxtLink to="/forgot-password" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded-sm">
             Forgot your password?
           </NuxtLink>
         </div>
 
-        <button type="submit" :disabled="loading"
+        <button type="submit" :disabled="loading" :aria-busy="loading" :aria-label="loading ? 'Signing in...' : 'Sign In'"
           class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
-          <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3">
+          <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3" aria-hidden="true">
             <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor"
