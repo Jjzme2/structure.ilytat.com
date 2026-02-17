@@ -4,10 +4,14 @@ export const requireAuth = async (event: any) => {
     let authHeader = getHeader(event, 'authorization');
 
     // Fallback to query parameter
+    // Security: Only allow token in query param for download endpoint to prevent leakage in logs
     if (!authHeader) {
-        const query = getQuery(event)
-        if (query.token) {
-            authHeader = `Bearer ${query.token}`
+        const url = getRequestURL(event)
+        if (url.pathname.startsWith('/api/documents/download')) {
+            const query = getQuery(event)
+            if (query.token) {
+                authHeader = `Bearer ${query.token}`
+            }
         }
     }
 
