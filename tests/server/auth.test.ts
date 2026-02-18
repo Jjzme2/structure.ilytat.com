@@ -16,6 +16,7 @@ vi.mock('firebase-admin/auth', () => {
 // Stub globals for Nuxt auto-imports
 global.getHeader = vi.fn()
 global.getQuery = vi.fn()
+global.getRequestURL = vi.fn(() => ({ pathname: '/' }))
 global.createError = (err) => {
   const e = new Error(err.statusMessage || 'Error')
   e.statusCode = err.statusCode || 500
