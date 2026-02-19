@@ -14,7 +14,8 @@
         <!-- New Document Button -->
         <button @click="toggleForm"
           class="group relative w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-white transition-all duration-300 hover:border-pink-500/50 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]"
-          title="New Note">
+          title="New Note"
+          :aria-label="(!showForm && !editingNote) ? 'Create new note' : 'Cancel'">
           <svg v-if="!showForm && !editingNote"
             class="w-6 h-6 text-pink-500 group-hover:scale-110 transition-transform duration-300" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
@@ -28,7 +29,8 @@
         <!-- Upload Toggle Button -->
          <button @click="toggleUpload"
           class="group relative w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-white transition-all duration-300 hover:border-indigo-500/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-          title="Upload File">
+          title="Upload File"
+          :aria-label="!showUpload ? 'Upload file' : 'Cancel upload'">
            <svg v-if="!showUpload" class="w-6 h-6 text-indigo-500 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
@@ -37,7 +39,7 @@
           </svg>
         </button>
 
-         <button @click="() => fetchDocuments(true)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/30 transition-all" title="Refresh">
+         <button @click="() => fetchDocuments(true)" class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/30 transition-all" title="Refresh" aria-label="Refresh documents">
              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
              </svg>
@@ -78,10 +80,14 @@
                 placeholder="Enter document content..." required></textarea>
             </div>
             <div class="flex justify-end">
-              <button type="submit" :disabled="submitting || !form.title.trim()"
-                class="relative group/btn overflow-hidden px-10 py-4 rounded-2xl bg-pink-600 text-white font-black shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
-                <span class="relative z-10">
-                  {{ editingNote ? 'Update Document' : 'Save Document' }}
+              <button type="submit" :disabled="submitting || !form.title.trim()" :aria-busy="submitting"
+                class="relative group/btn overflow-hidden px-10 py-4 rounded-2xl bg-pink-600 text-white font-black shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed">
+                <span class="relative z-10 flex items-center gap-2">
+                  <svg v-if="submitting" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ submitting ? (editingNote ? 'Updating...' : 'Saving...') : (editingNote ? 'Update Document' : 'Save Document') }}
                 </span>
                 <div
                   class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300">
@@ -116,13 +122,13 @@
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button @click="openDocument(doc.key, true)" class="p-2 text-slate-400 hover:text-indigo-400 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="View Document">
+                                <button @click="openDocument(doc.key, true)" class="p-2 text-slate-400 hover:text-indigo-400 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="View Document" aria-label="View document">
                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </button>
-                                <button @click="openDocument(doc.key, false)" class="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="Download">
+                                <button @click="openDocument(doc.key, false)" class="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors" title="Download" aria-label="Download document">
                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
@@ -155,9 +161,9 @@
                          
                          <div class="flex justify-between items-start mb-2">
                              <h4 class="text-lg font-bold text-slate-200 line-clamp-1 group-hover:text-pink-400 transition-colors">{{ note.title }}</h4>
-                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button @click="startEdit(note)" class="p-1 text-slate-500 hover:text-emerald-400">✏️</button>
-                                <button @click="deleteNote(note.id)" class="p-1 text-slate-500 hover:text-rose-400">🗑️</button>
+                             <div class="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                                <button @click="startEdit(note)" class="p-1 text-slate-500 hover:text-emerald-400" aria-label="Edit note">✏️</button>
+                                <button @click="deleteNote(note.id)" class="p-1 text-slate-500 hover:text-rose-400" aria-label="Delete note">🗑️</button>
                              </div>
                          </div>
                          
