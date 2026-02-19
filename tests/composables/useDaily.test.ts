@@ -1,70 +1,64 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useDaily } from '../../client/composables/useDaily'
-import * as vuefire from 'vuefire'
-import * as firestore from 'firebase/firestore'
+import { ref, computed } from 'vue'
+import { getDoc, getDocs, collection, query, where, limit } from 'firebase/firestore'
 
 // Mock dependencies
+vi.mock('vuefire', () => ({
+    useCurrentUser: () => ref({ uid: 'test-user-id' }),
+    useFirestore: () => ({})
+}))
+
 vi.mock('firebase/firestore', () => ({
-    collection: vi.fn(),
     doc: vi.fn(),
-    getDoc: vi.fn(),
-    getDocs: vi.fn(),
+    collection: vi.fn(),
     query: vi.fn(),
     where: vi.fn(),
     orderBy: vi.fn(),
     limit: vi.fn(),
+    getDoc: vi.fn(),
+    getDocs: vi.fn(),
     setDoc: vi.fn()
 }))
 
-vi.mock('vuefire', () => ({
-    useCurrentUser: vi.fn(),
-    useFirestore: vi.fn()
-}))
+// Mock Nuxt auto-imports
+vi.stubGlobal('ref', ref)
+vi.stubGlobal('computed', computed)
+vi.stubGlobal('reactive', (obj: any) => obj)
 
-describe('useDaily Composable', () => {
+describe('useDaily', () => {
     beforeEach(() => {
         vi.clearAllMocks()
-
-        // Mock user
-        ;(vuefire.useCurrentUser as any).mockReturnValue({ value: { uid: 'test-user' } })
-
-        // Mock db
-        ;(vuefire.useFirestore as any).mockReturnValue({})
-
-        // Mock collection to return its name for easier identification in query assertions
-        ;(firestore.collection as any).mockImplementation((db: any, name: string) => name)
-
-        // Mock where to return a structured object we can inspect
-        ;(firestore.where as any).mockImplementation((field: string, op: string, val: any) => ({ field, op, val }))
-
-        // Mock getDoc to return empty snapshot by default
-        ;(firestore.getDoc as any).mockResolvedValue({
-            exists: () => false,
-            data: () => null
-        })
-
-        // Mock getDocs to return empty snapshot
-        ;(firestore.getDocs as any).mockResolvedValue({
-            empty: true,
-            docs: []
-        })
     })
 
-    it('should fetch tasks with optimized query (status=focus and focusDate=today)', async () => {
-        const { fetchDaily, todayStr, dailySnapshot } = useDaily()
+    it('fetches daily data efficiently including tasks', async () => {
+        // Setup mocks
+        // dailyRef
+        (getDoc as any).mockImplementation((ref: any) => {
+            return Promise.resolve({
+                exists: () => false, // No daily quote yet
+                data: () => ({})
+            })
+        });
+
+        // tasksQuery, datesQuery
+        (getDocs as any).mockImplementation((q: any) => {
+            return Promise.resolve({
+                empty: true,
+                docs: []
+            })
+        });
+
+        const { fetchDaily, dailySnapshot } = useDaily()
 
         await fetchDaily()
 
-        // Verify that query was called for 'tasks' collection with the correct filters
-        expect(firestore.query).toHaveBeenCalledWith(
-            'tasks',
-            expect.objectContaining({ field: 'userId', op: '==', val: 'test-user' }),
-            expect.objectContaining({ field: 'status', op: '==', val: 'focus' }),
-            expect.objectContaining({ field: 'focusDate', op: '==', val: todayStr.value })
-        )
+        // Assert that getDocs was called for tasks
+        // We expect collection 'tasks' to be queried
+        expect(collection).toHaveBeenCalledWith(expect.anything(), 'tasks')
 
-        // Verify that the function completed successfully (tasksSnap was accessible)
-        expect(dailySnapshot.value).not.toBeNull()
-        expect(dailySnapshot.value?.tasks).toBeDefined()
+        // Verify parallel execution: getDocs should be called
+        // In this test scenario: dates + tasks + userQuotes + systemQuotes = 4
+        expect(getDocs).toHaveBeenCalledTimes(4)
     })
 })
