@@ -27,6 +27,20 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce Ownership for New Uploads (IDOR Protection)
+    // Legacy files in root 'documents/' are allowed for now to prevent breakage.
+    // New files in 'documents/users/{uid}/' must match the authenticated user.
+    if (key.startsWith('documents/users/')) {
+        const expectedPrefix = `documents/users/${(auth as any).uid}/`
+        if (!key.startsWith(expectedPrefix)) {
+            console.warn(`Unauthorized access attempt to ${key} by user ${(auth as any).uid}`)
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Unauthorized access to file'
+            })
+        }
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing

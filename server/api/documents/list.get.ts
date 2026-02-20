@@ -4,7 +4,7 @@ import { requireAuth } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    await requireAuth(event)
+    const user = await requireAuth(event)
 
     try {
         const command = new ListObjectsV2Command({
@@ -14,11 +14,22 @@ export default defineEventHandler(async (event) => {
 
         const response = await r2Client.send(command)
 
-        return response.Contents?.map(item => ({
+        // Filter files to prevent IDOR:
+        // 1. Show legacy files (not in 'documents/users/')
+        // 2. Show files owned by the current user ('documents/users/{uid}/')
+        const visibleFiles = response.Contents?.filter(item => {
+            const key = item.Key || ''
+            if (key.startsWith('documents/users/')) {
+                return key.startsWith(`documents/users/${user.uid}/`)
+            }
+            return true // Legacy or other shared files
+        }) || []
+
+        return visibleFiles.map(item => ({
             key: item.Key,
             size: item.Size,
             lastModified: item.LastModified
-        })) || []
+        }))
 
     } catch (error: any) {
         console.error('R2 List Error:', error)
