@@ -23,13 +23,26 @@
       <form v-if="!emailSent" @submit.prevent="handleResetPassword" class="mt-8 space-y-6">
         <div>
           <label for="email" class="sr-only">Email address</label>
-          <input id="email" v-model="email" type="email" required placeholder="Email address"
-            class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            required
+            placeholder="Email address"
+            :aria-invalid="!!error"
+            :aria-describedby="error ? 'reset-error' : undefined"
+            class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200"
+          />
         </div>
 
         <div>
-          <button type="submit" :disabled="loading"
-            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
+          <button
+            type="submit"
+            :disabled="loading"
+            :aria-busy="loading"
+            :aria-label="loading ? 'Sending reset link...' : 'Send Reset Link'"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
+          >
             <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3">
               <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -38,13 +51,20 @@
                 </path>
               </svg>
             </span>
-            Send Reset Link
+            {{ loading ? 'Sending...' : 'Send Reset Link' }}
           </button>
         </div>
       </form>
 
       <!-- Success Message -->
-      <div v-else class="mt-8 space-y-6">
+      <div
+        v-else
+        ref="successMessage"
+        tabindex="-1"
+        role="status"
+        aria-live="polite"
+        class="mt-8 space-y-6 outline-none"
+      >
         <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
           <p class="text-emerald-400 text-center text-sm">
             Check your email! We've sent a password reset link to <span class="font-medium text-emerald-300">{{ email }}</span>.
@@ -58,7 +78,7 @@
         </div>
       </div>
 
-      <div v-if="error" class="text-red-400 text-center text-sm">
+      <div v-if="error" id="reset-error" role="alert" aria-live="assertive" class="text-red-400 text-center text-sm">
         {{ error }}
       </div>
 
@@ -80,6 +100,7 @@ const loading = ref(false)
 const error = ref('')
 const email = ref('')
 const emailSent = ref(false)
+const successMessage = ref<HTMLElement | null>(null)
 
 definePageMeta({
   layout: 'empty'
@@ -98,6 +119,8 @@ const handleResetPassword = async () => {
   try {
     await sendPasswordResetEmail(auth, email.value)
     emailSent.value = true
+    await nextTick()
+    successMessage.value?.focus()
   } catch (e: any) {
     console.error(e)
     if (e.code === 'auth/user-not-found') {
