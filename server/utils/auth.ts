@@ -1,5 +1,7 @@
 import { getAuth } from 'firebase-admin/auth';
 
+export const ADMIN_EMAILS = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
+
 export const requireAuth = async (event: any) => {
     let authHeader = getHeader(event, 'authorization');
 
@@ -38,8 +40,7 @@ export const requireAdmin = async (event: any) => {
 
     // Check hardcoded emails (legacy/god mode)
     // TODO: Migrate these users to use claims and remove hardcoded checks
-    const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
-    if (user.email && adminEmails.includes(user.email)) {
+    if (user.email && ADMIN_EMAILS.includes(user.email)) {
         return user;
     }
 

@@ -1,6 +1,6 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { r2Client, R2_BUCKET } from '../../utils/r2'
-import { requireAuth } from '../../utils/auth'
+import { requireAuth, ADMIN_EMAILS } from '../../utils/auth'
 import { Readable } from 'stream'
 import mime from 'mime-types'
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
@@ -25,6 +25,26 @@ export default defineEventHandler(async (event) => {
             statusCode: 400,
             statusMessage: 'Invalid file key'
         })
+    }
+
+    // Security: IDOR Protection
+    // Enforce ownership for user-specific files
+    if (key.startsWith('documents/users/')) {
+        const pathParts = key.split('/')
+        // format: documents/users/{uid}/{filename}
+        const ownerId = pathParts[2]
+
+        if (ownerId !== auth.uid) {
+            // Check for admin privileges (claims or hardcoded legacy emails)
+            const isAdmin = (auth.admin === true || auth.role === 'admin') || (auth.email && ADMIN_EMAILS.includes(auth.email))
+
+            if (!isAdmin) {
+                throw createError({
+                    statusCode: 403,
+                    statusMessage: 'Forbidden'
+                })
+            }
+        }
     }
 
     const isInline = query.inline === 'true'
