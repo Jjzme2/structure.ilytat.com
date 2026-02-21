@@ -7,3 +7,8 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+
+## 2026-02-05 - Insecure Direct Object Reference in Documents
+**Vulnerability:** Document downloads were vulnerable to IDOR; any authenticated user could download any file by guessing the key, and the list endpoint exposed all file keys.
+**Learning:** Uploads were not scoped to users, making access control hard. The entire document storage model was insecure by default.
+**Prevention:** Enforce user-scoped paths (`documents/users/${uid}/`) for uploads and validate ownership in download/list endpoints.
