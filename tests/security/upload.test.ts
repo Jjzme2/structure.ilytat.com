@@ -22,6 +22,7 @@ global.createError = (err) => {
   return e
 }
 global.defineEventHandler = (handler) => handler
+global.getHeader = vi.fn().mockReturnValue('1000')
 
 describe('Upload Security', () => {
   let uploadHandler
@@ -91,7 +92,7 @@ describe('Upload Security', () => {
       {
         filename: 'My Document!.pdf', // Contains space and !
         type: 'application/pdf',
-        data: Buffer.from('pdf-content')
+        data: Buffer.from('%PDF-1.4')
       }
     ])
 
@@ -112,5 +113,36 @@ describe('Upload Security', () => {
     expect(callArgs.Key).toMatch(/^documents\/\d+-my-document-.pdf$/)
     expect(callArgs.Key).not.toContain(' ')
     expect(callArgs.Key).not.toContain('!')
+  })
+
+  it('should REJECT a fake PDF (executable disguised as PDF)', async () => {
+    global.readMultipartFormData.mockResolvedValue([
+      {
+        filename: 'fake.pdf',
+        type: 'application/pdf',
+        data: Buffer.from('MZ9000...') // 'MZ' is header for EXE
+      }
+    ])
+
+    try {
+        await uploadHandler({})
+        expect.fail('Should have thrown error for invalid file content')
+    } catch (error) {
+        expect(error.statusCode).toBe(400)
+        expect(error.statusMessage).toContain('Invalid file content')
+    }
+  })
+
+  it('should REJECT request with Content-Length header too large', async () => {
+    // 10MB Content-Length
+    global.getHeader.mockReturnValue((10 * 1024 * 1024).toString())
+
+    try {
+        await uploadHandler({})
+        expect.fail('Should have thrown error for payload too large')
+    } catch (error) {
+        expect(error.statusCode).toBe(413)
+        expect(error.statusMessage).toContain('Payload too large')
+    }
   })
 })

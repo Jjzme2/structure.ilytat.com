@@ -16,9 +16,35 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Security: Validate file signature (magic bytes)
+const validateSignature = (buffer: Buffer, mimeType: string): boolean => {
+    const hex = buffer.subarray(0, 8).toString('hex').toUpperCase();
+    const signatures: Record<string, string[]> = {
+        'application/pdf': ['25504446'], // %PDF
+        'image/jpeg': ['FFD8FF'],
+        'image/png': ['89504E47'],
+        'image/webp': ['52494646'], // RIFF (first 4 bytes)
+    };
+
+    // If not in our strict check list, we pass it (e.g. text/plain, office docs)
+    if (!signatures[mimeType]) return true;
+
+    return signatures[mimeType].some(sig => hex.startsWith(sig));
+};
+
 export default defineEventHandler(async (event) => {
     // Verify authentication
     const user = await requireAuth(event)
+
+    // Security: Check Content-Length before parsing body (DoS prevention)
+    // Allow some overhead for multipart boundaries (e.g. 1MB extra)
+    const contentLength = parseInt(getHeader(event, 'content-length') || '0', 10);
+    if (contentLength > MAX_FILE_SIZE + 1024 * 1024) {
+        throw createError({
+            statusCode: 413,
+            statusMessage: 'Payload too large'
+        });
+    }
 
     // Read multipart form data
     const files = await readMultipartFormData(event)
@@ -48,6 +74,14 @@ export default defineEventHandler(async (event) => {
             throw createError({
                 statusCode: 400,
                 statusMessage: `File too large: ${file.filename}. Max size is 5MB.`
+            })
+        }
+
+        // Security: Validate File Signature (Magic Bytes)
+        if (!validateSignature(file.data, file.type || '')) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: `Invalid file content for type: ${file.type}`
             })
         }
 
