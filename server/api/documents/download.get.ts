@@ -27,6 +27,18 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: IDOR Protection
+    // Users can only access files in their own directory or legacy root files
+    if (key.startsWith('documents/users/')) {
+        const expectedPrefix = `documents/users/${auth.uid}/`
+        if (!key.startsWith(expectedPrefix)) {
+             throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden: You do not have permission to access this file'
+            })
+        }
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
