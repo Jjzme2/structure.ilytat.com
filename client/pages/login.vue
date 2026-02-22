@@ -23,7 +23,7 @@
       <form @submit.prevent="loginWithEmail" class="mt-8 space-y-4">
         <div>
           <label for="email" class="sr-only">Email address</label>
-          <input id="email" v-model="form.email" type="email" required placeholder="Email address"
+          <input id="email" v-model="form.email" type="email" required autofocus placeholder="Email address"
             :aria-invalid="!!error" :aria-describedby="error ? 'login-error' : undefined"
             class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
         </div>
@@ -67,15 +67,24 @@
               </path>
             </svg>
           </span>
-          Sign In
+          {{ loading ? 'Signing in...' : 'Sign In' }}
         </button>
       </form>
 
 
 
-      <div v-if="error" class="text-red-400 text-center text-sm" role="alert" aria-live="polite">
-        {{ error }}
-      </div>
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="transform scale-95 opacity-0"
+        enter-to-class="transform scale-100 opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="transform scale-100 opacity-100"
+        leave-to-class="transform scale-95 opacity-0"
+      >
+        <div v-if="error" id="login-error" class="text-red-400 text-center text-sm bg-red-400/10 p-2 rounded-lg" role="alert" aria-live="assertive">
+          {{ error }}
+        </div>
+      </Transition>
 
 
     </div>
