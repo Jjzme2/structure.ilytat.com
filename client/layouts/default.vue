@@ -13,6 +13,27 @@ const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 const isInboxOpen = ref(false)
 
+// Profile Dropdown State
+const isProfileOpen = ref(false)
+const profileMenuRef = ref<HTMLElement | null>(null)
+const profileButtonRef = ref<HTMLElement | null>(null)
+
+const closeProfileMenu = (e: MouseEvent) => {
+  if (isProfileOpen.value &&
+      profileMenuRef.value &&
+      !profileMenuRef.value.contains(e.target as Node) &&
+      profileButtonRef.value &&
+      !profileButtonRef.value.contains(e.target as Node)) {
+    isProfileOpen.value = false
+  }
+}
+
+const closeOnEscape = (e: KeyboardEvent) => {
+  if (isProfileOpen.value && e.key === 'Escape') {
+    isProfileOpen.value = false
+  }
+}
+
 // Initialize session timeout monitoring
 useSessionTimeout()
 
@@ -30,10 +51,14 @@ const handleScroll = () => {
 onMounted(() => {
   initTheme()
   window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', closeProfileMenu)
+  document.addEventListener('keydown', closeOnEscape)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', closeProfileMenu)
+  document.removeEventListener('keydown', closeOnEscape)
 })
 
 watch(user, async (currentUser, prevUser) => {
@@ -54,6 +79,7 @@ watch(user, async (newUser) => {
 
 watch(() => router.currentRoute.value.path, () => {
   isMenuOpen.value = false
+  isProfileOpen.value = false
 })
 </script>
 
@@ -108,7 +134,14 @@ watch(() => router.currentRoute.value.path, () => {
 
               <!-- Profile Dropdown -->
               <div class="relative group hidden sm:block">
-                <button class="relative outline-none">
+                <button
+                  ref="profileButtonRef"
+                  @click="isProfileOpen = !isProfileOpen"
+                  :aria-expanded="isProfileOpen"
+                  aria-haspopup="true"
+                  aria-label="User menu"
+                  id="user-menu-button"
+                  class="relative outline-none">
                   <div
                     class="absolute -inset-1 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500">
                   </div>
@@ -120,14 +153,17 @@ watch(() => router.currentRoute.value.path, () => {
 
                 <!-- Dropdown Menu -->
                 <div
-                  class="absolute right-0 top-full mt-2 w-48 rounded-xl bg-glass backdrop-blur-xl border border-glass shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right z-50 p-1">
+                  ref="profileMenuRef"
+                  :aria-hidden="!isProfileOpen"
+                  class="absolute right-0 top-full mt-2 w-48 rounded-xl bg-glass backdrop-blur-xl border border-glass shadow-2xl transition-all duration-300 transform origin-top-right z-50 p-1"
+                  :class="[isProfileOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none']">
                   <div class="px-4 py-3 border-b border-glass mb-1">
                     <p class="text-xs font-bold text-muted uppercase tracking-wider">{{ user?.displayName ||
                       user?.email?.split('@')[0] || 'Operator' }}</p>
                     <p class="text-sm font-medium text-text-primary truncate">{{ user?.email }}</p>
                   </div>
 
-                  <NuxtLink v-if="isAdmin" to="/admin"
+                  <NuxtLink v-if="isAdmin" to="/admin" @click="isProfileOpen = false"
                     class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left group/admin">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,7 +172,7 @@ watch(() => router.currentRoute.value.path, () => {
                     Admin Panel
                   </NuxtLink>
 
-                  <NuxtLink to="/settings"
+                  <NuxtLink to="/settings" @click="isProfileOpen = false"
                     class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/settings">
                     <svg class="w-4 h-4 group-hover/settings:rotate-90 transition-transform duration-500" fill="none"
                       viewBox="0 0 24 24" stroke="currentColor">
