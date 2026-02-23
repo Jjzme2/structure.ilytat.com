@@ -7,7 +7,7 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    const auth = await requireAuth(event)
+    const auth = await requireAuth(event, { allowQueryToken: true })
 
     const query = getQuery(event)
     const key = query.key as string
