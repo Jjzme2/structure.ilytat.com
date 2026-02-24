@@ -126,4 +126,29 @@ describe('Auth Utilities', () => {
       expect(error.statusMessage).toContain('Missing or invalid token')
     }
   })
+
+  it('should ignore query token by default', async () => {
+    const event = {}
+    global.getHeader.mockReturnValue(null)
+    global.getQuery.mockReturnValue({ token: 'query-token' })
+    mockVerifyIdToken.mockResolvedValue({ uid: 'user123' })
+
+    try {
+      await requireAuth(event)
+      expect.fail('Should have thrown Unauthorized error')
+    } catch (error) {
+      expect(error.statusCode).toBe(401)
+    }
+  })
+
+  it('should accept query token when allowQueryToken is true', async () => {
+    const event = {}
+    global.getHeader.mockReturnValue(null)
+    global.getQuery.mockReturnValue({ token: 'query-token' })
+    mockVerifyIdToken.mockResolvedValue({ uid: 'user123' })
+
+    const user = await requireAuth(event, { allowQueryToken: true })
+    expect(user.uid).toBe('user123')
+    expect(mockVerifyIdToken).toHaveBeenCalledWith('query-token')
+  })
 })

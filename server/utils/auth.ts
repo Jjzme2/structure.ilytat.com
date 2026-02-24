@@ -1,10 +1,10 @@
 import { getAuth } from 'firebase-admin/auth';
 
-export const requireAuth = async (event: any) => {
+export const requireAuth = async (event: any, opts: { allowQueryToken?: boolean } = {}) => {
     let authHeader = getHeader(event, 'authorization');
 
     // Fallback to query parameter
-    if (!authHeader) {
+    if (!authHeader && opts.allowQueryToken) {
         const query = getQuery(event)
         if (query.token) {
             authHeader = `Bearer ${query.token}`
