@@ -5,11 +5,13 @@
         type="file" 
         @change="handleUpload" 
         class="sr-only peer"
-        id="document-upload" 
+        :id="id"
         :disabled="uploading"
+        :aria-invalid="!!error"
+        :aria-describedby="error ? errorId : undefined"
       >
       <label 
-        for="document-upload" 
+        :for="id"
         @dragenter.prevent="isDragging = true"
         @dragover.prevent="isDragging = true"
         @dragleave.prevent="isDragging = false"
@@ -23,7 +25,7 @@
               : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:text-white hover:border-pink-500 hover:bg-slate-900 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.1)]'
         ]"
       >
-        <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none">
+        <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none" aria-live="polite">
           <div v-if="uploading" class="animate-spin text-2xl">
             ⏳
           </div>
@@ -49,8 +51,8 @@
       </label>
     </div>
 
-    <div v-if="error" class="text-sm text-red-400 bg-red-400/10 border border-red-400/20 p-3 rounded-xl flex items-center gap-2">
-      <span>⚠️</span>
+    <div v-if="error" :id="errorId" role="alert" class="text-sm text-red-400 bg-red-400/10 border border-red-400/20 p-3 rounded-xl flex items-center gap-2">
+      <span aria-hidden="true">⚠️</span>
       {{ error }}
     </div>
   </div>
@@ -61,6 +63,8 @@ import { useR2 } from '~/composables/useR2'
 
 const { uploadDocument, uploading, error } = useR2()
 const isDragging = ref(false)
+const id = useId()
+const errorId = `${id}-error`
 
 const handleDrop = async (event: DragEvent) => {
   isDragging.value = false
