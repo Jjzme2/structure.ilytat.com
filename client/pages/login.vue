@@ -32,6 +32,7 @@
           <div class="relative">
             <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" required
               placeholder="Password"
+              :aria-invalid="!!error" :aria-describedby="error ? 'login-error' : undefined"
               class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 pr-10" />
             <button type="button" @click="showPassword = !showPassword"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors focus:outline-none focus:text-indigo-400"
@@ -57,6 +58,22 @@
           </NuxtLink>
         </div>
 
+        <!-- Error Message -->
+        <Transition
+          enter-active-class="transition ease-out duration-200"
+          enter-from-class="transform opacity-0 -translate-y-2"
+          enter-to-class="transform opacity-100 translate-y-0"
+          leave-active-class="transition ease-in duration-150"
+          leave-from-class="transform opacity-100 translate-y-0"
+          leave-to-class="transform opacity-0 -translate-y-2"
+        >
+          <div v-if="error" id="login-error" class="p-3 bg-red-500/10 border border-red-500/20 rounded-lg" role="alert" aria-live="assertive">
+            <p class="text-red-400 text-center text-sm font-medium">
+              {{ error }}
+            </p>
+          </div>
+        </Transition>
+
         <button type="submit" :disabled="loading" :aria-busy="loading" :aria-label="loading ? 'Signing in...' : 'Sign In'"
           class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
           <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3" aria-hidden="true">
@@ -70,13 +87,6 @@
           Sign In
         </button>
       </form>
-
-
-
-      <div v-if="error" class="text-red-400 text-center text-sm" role="alert" aria-live="polite">
-        {{ error }}
-      </div>
-
 
     </div>
   </div>
@@ -130,6 +140,4 @@ const loginWithEmail = async () => {
     loading.value = false
   }
 }
-
-
 </script>
