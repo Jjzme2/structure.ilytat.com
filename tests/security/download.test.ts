@@ -3,7 +3,8 @@ import { r2Client } from '../../server/utils/r2'
 
 // Mock dependencies
 vi.mock('../../server/utils/auth', () => ({
-  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' })
+  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' }),
+  checkIsAdmin: vi.fn(() => false)
 }))
 
 vi.mock('../../server/utils/r2', () => ({

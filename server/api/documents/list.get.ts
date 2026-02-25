@@ -1,15 +1,20 @@
 import { ListObjectsV2Command } from '@aws-sdk/client-s3'
 import { r2Client, R2_BUCKET } from '../../utils/r2'
-import { requireAuth } from '../../utils/auth'
+import { requireAuth, checkIsAdmin } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    await requireAuth(event)
+    const auth = await requireAuth(event)
+
+    // Check if user is admin
+    const isAdmin = checkIsAdmin(auth)
+
+    const prefix = isAdmin ? undefined : `documents/users/${(auth as any).uid}/`
 
     try {
         const command = new ListObjectsV2Command({
             Bucket: R2_BUCKET,
-            // Prefix: 'documents/' // Optional: if we want to organize in a folder
+            Prefix: prefix
         })
 
         const response = await r2Client.send(command)
