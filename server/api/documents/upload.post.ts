@@ -54,7 +54,10 @@ export default defineEventHandler(async (event) => {
         // Security: Sanitize Filename
         // Allow alphanumeric, dots, dashes, underscores only.
         const sanitizedFilename = file.filename.replace(/[^a-zA-Z0-9.\-_]/g, '-').toLowerCase()
-        const key = `documents/${Date.now()}-${sanitizedFilename}`
+
+        // Security: Scoped to User ID
+        // Format: documents/users/{userId}/{timestamp}-{filename}
+        const key = `documents/users/${user.uid}/${Date.now()}-${sanitizedFilename}`
 
         try {
             const command = new PutObjectCommand({
