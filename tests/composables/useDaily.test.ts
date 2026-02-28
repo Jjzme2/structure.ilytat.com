@@ -16,6 +16,15 @@ vi.mock('firebase/firestore', () => ({
     setDoc: vi.fn()
 }))
 
+import { setActivePinia, createPinia } from 'pinia'
+import { registerEndpoint } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+
+// Mocking useTasksStore dependencies or completely mock useTasksStore
+vi.mock('../../client/stores/tasks', () => ({
+    useTasksStore: vi.fn(() => ({}))
+}))
+
 vi.mock('vuefire', () => ({
     useCurrentUser: vi.fn(),
     useFirestore: vi.fn()
@@ -23,6 +32,7 @@ vi.mock('vuefire', () => ({
 
 describe('useDaily Composable', () => {
     beforeEach(() => {
+        setActivePinia(createPinia())
         vi.clearAllMocks()
 
         // Mock user
