@@ -14,7 +14,7 @@
           <p class="text-sm font-medium text-white">{{ toast.message }}</p>
         </div>
 
-        <button @click="remove(toast.id)" class="text-slate-500 hover:text-white transition-colors">
+        <button @click="remove(toast.id)" aria-label="Close notification" class="text-slate-500 hover:text-white transition-colors">
           ✕
         </button>
       </div>
