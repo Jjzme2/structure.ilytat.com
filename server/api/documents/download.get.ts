@@ -1,6 +1,6 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { r2Client, R2_BUCKET } from '../../utils/r2'
-import { requireAuth } from '../../utils/auth'
+import { requireAuth, requireAdmin } from '../../utils/auth'
 import { Readable } from 'stream'
 import mime from 'mime-types'
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
@@ -25,6 +25,24 @@ export default defineEventHandler(async (event) => {
             statusCode: 400,
             statusMessage: 'Invalid file key'
         })
+    }
+
+    // Security: IDOR Prevention - Ownership validation
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${auth.uid}/`)) {
+        let isAdmin = false
+        try {
+            await requireAdmin(event)
+            isAdmin = true
+        } catch (e) {
+            // Not an admin
+        }
+
+        if (!isAdmin) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden'
+            })
+        }
     }
 
     const isInline = query.inline === 'true'
