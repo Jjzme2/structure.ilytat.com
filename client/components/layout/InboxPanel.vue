@@ -20,7 +20,7 @@
             class="text-xs font-medium text-slate-400 hover:text-indigo-400 transition-colors">
             Mark all read
           </button>
-          <button @click="$emit('close')" class="p-2 text-slate-400 hover:text-white transition-colors">
+          <button @click="$emit('close')" aria-label="Close inbox" class="p-2 text-slate-400 hover:text-white transition-colors">
             ✕
           </button>
         </div>
