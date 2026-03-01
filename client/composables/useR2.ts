@@ -38,7 +38,7 @@ export const useR2 = () => {
             })
             documents.value = data.map(item => ({
                 ...item,
-                filename: item.key.replace(/^documents\/\d+-/, '') // Cleanup timestamp prefix for display
+                filename: item.key.split('/').pop()?.replace(/^\d+-/, '') || item.key // Cleanup timestamp prefix for display
             }))
             fetchedUserId.value = user.value.uid
         } catch (e: any) {

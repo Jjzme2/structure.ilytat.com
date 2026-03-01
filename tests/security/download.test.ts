@@ -3,7 +3,8 @@ import { r2Client } from '../../server/utils/r2'
 
 // Mock dependencies
 vi.mock('../../server/utils/auth', () => ({
-  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' })
+  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' }),
+  checkIsAdmin: vi.fn().mockReturnValue(false)
 }))
 
 vi.mock('../../server/utils/r2', () => ({
@@ -74,8 +75,8 @@ describe('Download Security', () => {
     }
   })
 
-  it('should allow valid keys (e.g., documents/file.pdf)', async () => {
-    global.getQuery.mockReturnValue({ key: 'documents/test-file.pdf' })
+  it('should allow valid keys owned by the user (e.g., documents/users/test-user/file.pdf)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/test-file.pdf' })
 
     const result = await downloadHandler({})
     expect(result).toBe('test-content')
@@ -84,7 +85,19 @@ describe('Download Security', () => {
     expect(r2Client.send).toHaveBeenCalled()
     const callArgs = r2Client.send.mock.calls[0][0].input
 
-    expect(callArgs.Key).toBe('documents/test-file.pdf')
+    expect(callArgs.Key).toBe('documents/users/test-user/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
+  })
+
+  it('should deny access to files owned by other users (IDOR prevention)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/test-file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for accessing other user\'s file')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden')
+    }
   })
 })
