@@ -21,14 +21,28 @@
 
       <!-- Password Reset Form -->
       <form v-if="!emailSent" @submit.prevent="handleResetPassword" class="mt-8 space-y-6">
+        <Transition
+          enter-active-class="transition duration-300 ease-out"
+          enter-from-class="transform -translate-y-2 opacity-0"
+          enter-to-class="transform translate-y-0 opacity-100"
+          leave-active-class="transition duration-200 ease-in"
+          leave-from-class="transform translate-y-0 opacity-100"
+          leave-to-class="transform -translate-y-2 opacity-0"
+        >
+          <div v-if="error" id="reset-error" class="text-red-400 text-center text-sm" role="alert" aria-live="polite">
+            {{ error }}
+          </div>
+        </Transition>
+
         <div>
           <label for="email" class="sr-only">Email address</label>
           <input id="email" v-model="email" type="email" required placeholder="Email address"
+            :aria-invalid="!!error" :aria-describedby="error ? 'reset-error' : undefined"
             class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
         </div>
 
         <div>
-          <button type="submit" :disabled="loading"
+          <button type="submit" :disabled="loading" :aria-busy="loading" :aria-label="loading ? 'Sending Reset Link...' : 'Send Reset Link'"
             class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
             <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3">
               <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -58,9 +72,6 @@
         </div>
       </div>
 
-      <div v-if="error" class="text-red-400 text-center text-sm">
-        {{ error }}
-      </div>
 
       <div class="text-center mt-6">
         <NuxtLink to="/login" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">
