@@ -1,0 +1,3 @@
+## 2025-03-03 - Improved Screen Reader Experience for Toasts
+**Learning:** Screen readers need context to announce toast notifications properly. Error/warning toasts require `role="alert"` and `aria-live="assertive"` for immediate announcement, while general info/success toasts should use `role="status"` and `aria-live="polite"` to avoid interrupting the user. Additionally, decorative icons inside these elements can confuse screen reader output and should be explicitly hidden using `aria-hidden="true"`.
+**Action:** When creating or modifying toast or notification components, dynamically set `role` and `aria-live` based on severity, and ensure all decorative visual indicators have `aria-hidden="true"`.
