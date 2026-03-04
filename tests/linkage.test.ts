@@ -1,8 +1,13 @@
+import { mockNuxtImport } from "@nuxt/test-utils/runtime"
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useTasksStore } from '../client/stores/tasks'
 import * as vuefire from 'vuefire'
 import * as firestore from 'firebase/firestore'
+
+mockNuxtImport('useState', () => {
+    return () => ({ value: 'company' })
+})
 
 // Mocking Firebase
 vi.mock('firebase/firestore', () => ({
