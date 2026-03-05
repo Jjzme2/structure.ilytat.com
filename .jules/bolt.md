@@ -8,3 +8,7 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+
+## 2025-05-27 - Parallelizing Firestore Fetches with Promise.all
+**Learning:** In composables like `useDaily`, making independent database requests sequentially causes performance bottlenecks. When resolving multiple promises with `Promise.all()`, ensuring that all fetches (e.g., `getDocs` or `getDoc`) are passed to `Promise.all` prevents missing data and maintains parallelized execution benefits.
+**Action:** When making multiple independent Firestore requests, always use `Promise.all()` to execute them in parallel, and ensure that all promise variables are accurately destructured from the array matching their order.

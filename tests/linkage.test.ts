@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useTasksStore } from '../client/stores/tasks'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import * as vuefire from 'vuefire'
 import * as firestore from 'firebase/firestore'
 
@@ -27,6 +28,10 @@ vi.mock('~/composables/useActivityLog', () => ({
         log: vi.fn()
     }))
 }))
+
+mockNuxtImport('useState', () => {
+  return () => ({ value: 'test-tenant' })
+})
 
 describe('Tasks Store - Strategic Linkage', () => {
     beforeEach(() => {
