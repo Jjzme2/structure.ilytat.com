@@ -3,6 +3,11 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useTasksStore } from '../client/stores/tasks'
 import * as vuefire from 'vuefire'
 import * as firestore from 'firebase/firestore'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+
+mockNuxtImport('useState', () => {
+    return () => ({ value: 'test-tenant' })
+})
 
 // Mocking Firebase
 vi.mock('firebase/firestore', () => ({
