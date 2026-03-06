@@ -27,6 +27,14 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (Ensure user owns the file)
+    if (!key.startsWith(`documents/users/${(auth as any).uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: You do not have access to this file'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
