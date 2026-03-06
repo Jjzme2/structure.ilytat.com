@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessible Toast Notifications
+**Learning:** Toast or notification components must dynamically use `role='alert'` and `aria-live='assertive'` for error types, and `role='status'` with `aria-live='polite'` for general or success updates to ensure proper screen reader announcements. Furthermore, decorative icons must be hidden with `aria-hidden="true"`, and icon-only close buttons need an explicit `aria-label`.
+**Action:** Always implement dynamic `role` and `aria-live` attributes based on message severity for notification components. Ensure decorative symbols have `aria-hidden="true"` and icon buttons have `aria-label`.
