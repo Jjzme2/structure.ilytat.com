@@ -1,0 +1,3 @@
+## 2024-05-18 - Toast Notification Accessibility
+**Learning:** Decorative icons in Toast notifications (like ✓, ✕, ⚠, ℹ) are read out by screen readers if not hidden, creating noisy, confusing announcements. Furthermore, "✕" for a close button lacks context.
+**Action:** Always add `aria-hidden="true"` to decorative symbols/emojis in alert components, and wrap text-based close icons in a span with `aria-hidden="true"` inside a button that has a descriptive `aria-label`. Dynamic `role` (alert vs status) and `aria-live` (assertive vs polite) must also be applied based on the notification type for proper screen reader behavior.
