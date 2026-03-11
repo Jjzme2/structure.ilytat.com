@@ -1,0 +1,3 @@
+## 2024-03-11 - Dynamic ARIA Roles for Notifications
+**Learning:** Toast components with varying message types (success vs. error) require dynamic ARIA attributes. A generic `role="status"` is insufficient for errors, which need `role="alert"` and `aria-live="assertive"` to ensure immediate screen reader interruption, while success messages need `aria-live="polite"` to avoid disrupting the user's current task.
+**Action:** Always bind `role` and `aria-live` properties dynamically based on the severity/type of the notification, and ensure decorative status icons within the toast use `aria-hidden="true"` to prevent redundant screen reader announcements.
