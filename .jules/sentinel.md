@@ -7,3 +7,8 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+
+## 2026-02-19 - Internal Server Error Leakage
+**Vulnerability:** API endpoints in `server/api/admin/` were exposing `e.message` to the client in `createError`'s `statusMessage`.
+**Learning:** Returning detailed internal errors (like `e.message` from third-party services like Firebase Auth) can expose sensitive implementation details, stack traces, or internal architectures to the client, providing attackers with useful information.
+**Prevention:** Never append `e.message` or `e.stack` to HTTP API responses. Instead, log the detailed error server-side (e.g. `console.error`) and return a generic error message (like "Failed to perform user action" or "Internal Server Error") to the client.
