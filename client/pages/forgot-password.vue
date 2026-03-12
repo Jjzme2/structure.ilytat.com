@@ -24,8 +24,22 @@
         <div>
           <label for="email" class="sr-only">Email address</label>
           <input id="email" v-model="email" type="email" required placeholder="Email address"
+            :aria-invalid="!!error" :aria-describedby="error ? 'reset-error' : undefined"
             class="relative block w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200" />
         </div>
+
+        <Transition
+          enter-active-class="duration-300 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div v-if="error" id="reset-error" class="text-red-400 text-center text-sm" role="alert" aria-live="polite">
+            {{ error }}
+          </div>
+        </Transition>
 
         <div>
           <button type="submit" :disabled="loading"
@@ -56,10 +70,6 @@
             Try a different email
           </button>
         </div>
-      </div>
-
-      <div v-if="error" class="text-red-400 text-center text-sm">
-        {{ error }}
       </div>
 
       <div class="text-center mt-6">
