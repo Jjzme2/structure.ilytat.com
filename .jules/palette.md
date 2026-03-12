@@ -1,0 +1,3 @@
+## 2024-05-14 - Accessible Form Errors
+**Learning:** Found a recurring pattern where form error messages lacked descriptive IDs mapping back to `aria-describedby` on inputs, missing `role="alert"` or `aria-live` attributes, and were visually disjointed outside form containers without transitions.
+**Action:** When creating forms, error containers must include a unique `id` matching input `aria-describedby`, use standard entry/exit `<Transition>` classes, and be positioned directly above the submit button to maintain logical flow for both sighted users and screen readers.
