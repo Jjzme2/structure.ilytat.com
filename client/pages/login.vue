@@ -57,6 +57,18 @@
           </NuxtLink>
         </div>
 
+        <Transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0 -translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-2">
+            <div v-if="error" id="login-error" class="text-red-400 text-center text-sm" role="alert" aria-live="assertive">
+              {{ error }}
+            </div>
+        </Transition>
+
         <button type="submit" :disabled="loading" :aria-busy="loading" :aria-label="loading ? 'Signing in...' : 'Sign In'"
           class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-900 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20">
           <span v-if="loading" class="absolute left-0 inset-y-0 flex items-center pl-3" aria-hidden="true">
@@ -70,12 +82,6 @@
           Sign In
         </button>
       </form>
-
-
-
-      <div v-if="error" class="text-red-400 text-center text-sm" role="alert" aria-live="polite">
-        {{ error }}
-      </div>
 
 
     </div>

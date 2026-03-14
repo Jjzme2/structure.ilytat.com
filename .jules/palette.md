@@ -1,0 +1,3 @@
+## 2024-03-14 - Form Error Message Accessibility and UX Pattern
+**Learning:** Found a recurring pattern where form error messages lack a target `id` for `aria-describedby` (rendering the association broken) and are placed below the submit button. Error messages below the submit button disrupt logical document flow and can be missed by users submitting the form, especially those using screen readers.
+**Action:** When implementing or fixing forms, always place error messages *above* the submit button so they are encountered logically before taking action. Wrap the error in a `<Transition>` for smooth visibility changes, ensure the error container has a matching `id` for `aria-describedby`, and use `role="alert"` with `aria-live="assertive"`.
