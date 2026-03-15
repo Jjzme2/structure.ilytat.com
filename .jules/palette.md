@@ -1,0 +1,3 @@
+## 2025-02-15 - Missing Accessible Error Associations in Auth Forms
+**Learning:** Auth forms like "Forgot Password" were not associating error messages with the relevant input fields via `aria-describedby` or using `aria-invalid`. Additionally, the error container lacked `role="alert"` and `aria-live="assertive"` for immediate screen reader feedback. Error messages were also placed below the submit button.
+**Action:** When creating or fixing forms, always place error messages above the submit button. Ensure error containers have `role="alert"` and an ID. Link the error container to the corresponding input using `aria-describedby` and set `aria-invalid="true"` on the input when it is invalid. Finally, wrap error messages in a `<Transition>` for visual polish.
