@@ -1,3 +1,7 @@
+## 2025-05-28 - Firestore Batch Writes for Bulk Updates
+**Learning:** Using `Promise.all` with individual `updateDoc` or `setDoc` calls executes independent network requests concurrently. This can lead to excessive round trips to Firestore, consuming bandwidth and increasing latency for bulk operations.
+**Action:** Use `writeBatch` to group multiple write operations into a single network request. It ensures atomicity and reduces the number of network trips from O(n) to O(1) for batches up to 500 operations.
+
 ## 2025-05-27 - Unit Testing Nuxt Composables with useState
 **Learning:** Testing Nuxt composables that use `useState` in Vitest requires `mockNuxtImport` from `@nuxt/test-utils/runtime` or careful global stubbing. Standard `vi.stubGlobal('useState', ...)` may be ignored if the composable relies on Nuxt auto-imports which are transpiled to import from `#imports`.
 **Action:** Use `mockNuxtImport` to mock `useState` in tests, or ensure the test environment is fully Nuxt-aware.
