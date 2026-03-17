@@ -7,3 +7,8 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+
+## 2026-03-17 - Error Information Exposure
+**Vulnerability:** API endpoints (e.g., `server/api/dates/public.get.ts`) were exposing internal error details (`error.message`) to the client via HTTP API responses.
+**Learning:** Developers often include `error.message` or `error.stack` in API responses for easier debugging, which inadvertently exposes internal system details to potential attackers.
+**Prevention:** Always log error details server-side using secure logging mechanisms, and return generic messages like "Internal Server Error" to the client in API responses.
