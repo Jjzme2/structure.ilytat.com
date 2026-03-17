@@ -1,0 +1,3 @@
+## 2025-03-05 - Dynamic ARIA Labels on Toggle Buttons
+**Learning:** Toggle buttons (like the TenantSwitcher) that rely solely on tooltips and visual state indicators (like text changing from 'HQ' to 'ME') can be confusing for screen reader users if their action is not explicitly announced. While `title` attributes provide a tooltip, they are not consistently read by screen readers.
+**Action:** When implementing toggle buttons, ensure an `aria-label` or `aria-labelledby` is dynamically bound to clearly describe the action of the button or its current state to screen reader users (e.g., `:aria-label="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'"`).
