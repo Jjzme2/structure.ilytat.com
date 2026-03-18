@@ -3,7 +3,8 @@ import { r2Client } from '../../server/utils/r2'
 
 // Mock dependencies
 vi.mock('../../server/utils/auth', () => ({
-  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' })
+  requireAuth: vi.fn().mockResolvedValue({ uid: 'test-user' }),
+  checkIsAdmin: vi.fn().mockReturnValue(false)
 }))
 
 vi.mock('../../server/utils/r2', () => ({
@@ -109,7 +110,7 @@ describe('Upload Security', () => {
     // Regex `[^a-zA-Z0-9.\-_]` replaces with `-`
     // So ' ' -> '-', '!' -> '-'
     // Result: "my-document-.pdf"
-    expect(callArgs.Key).toMatch(/^documents\/\d+-my-document-.pdf$/)
+    expect(callArgs.Key).toMatch(/^documents\/users\/test-user\/\d+-my-document-.pdf$/)
     expect(callArgs.Key).not.toContain(' ')
     expect(callArgs.Key).not.toContain('!')
   })
