@@ -33,18 +33,26 @@ export const requireAuth = async (event: any) => {
     }
 };
 
-export const requireAdmin = async (event: any) => {
-    const user = await requireAuth(event);
-
+export const checkIsAdmin = (user: any) => {
     // Check hardcoded emails (legacy/god mode)
     // TODO: Migrate these users to use claims and remove hardcoded checks
     const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
     if (user.email && adminEmails.includes(user.email)) {
-        return user;
+        return true;
     }
 
     // Check claims
     if (user.admin === true || user.role === 'admin') {
+        return true;
+    }
+
+    return false;
+}
+
+export const requireAdmin = async (event: any) => {
+    const user = await requireAuth(event);
+
+    if (checkIsAdmin(user)) {
         return user;
     }
 
