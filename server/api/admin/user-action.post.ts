@@ -59,9 +59,10 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, statusMessage: 'Invalid action' })
 
     } catch (e: any) {
+        console.error('Failed to perform user action:', e)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Failed to perform user action: ' + e.message
+            statusMessage: 'Failed to perform user action'
         })
     }
 })
