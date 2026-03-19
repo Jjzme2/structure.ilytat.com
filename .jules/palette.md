@@ -1,0 +1,3 @@
+## 2024-05-24 - Dynamic ARIA Attributes for Toast Notifications
+**Learning:** Toast components with multiple severity levels (error, success, etc) require dynamic `role` and `aria-live` attributes to ensure correct and non-disruptive screen reader announcements. Error types need `role="alert"` and `aria-live="assertive"`, while generic updates need `role="status"` and `aria-live="polite"`.
+**Action:** Implemented dynamic binding in Vue using `:role` and `:aria-live` based on the toast type prop to dynamically announce these states. This pattern should be standard for all future dynamic notification systems.
