@@ -194,7 +194,12 @@ const okrForm = reactive({
 
 const tasksQuery = computed(() => {
     if (!user.value) return null
-    return query(collection(db, 'tasks'), where('userId', '==', user.value.uid))
+    // OPTIMIZATION: Only fetch active tasks to prevent explosive document reads from archived tasks
+    return query(
+        collection(db, 'tasks'),
+        where('userId', '==', user.value.uid),
+        where('status', 'in', ['backlog', 'focus', 'doing', 'done'])
+    )
 })
 const tasks = useCollection<Task>(tasksQuery)
 

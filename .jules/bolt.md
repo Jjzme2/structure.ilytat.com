@@ -8,3 +8,7 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+
+## 2025-05-27 - Preventing Archived Data Explosion in Broad Queries
+**Learning:** Fetching an entire collection filtered only by user ID (e.g., `where('userId', '==', uid)`) causes an explosive increase in document reads over time as entities like tasks are archived. This was a severe bottleneck in `strategy.vue`.
+**Action:** Always constrain status or active states at the query level. Use `where('status', 'in', ['backlog', 'focus', 'doing', 'done'])` instead of filtering out archived items in memory.
