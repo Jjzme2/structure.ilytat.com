@@ -1,0 +1,3 @@
+## 2024-05-24 - Dropdown Menu Interaction and Transitions
+**Learning:** Using `hover` combined with `invisible` for dropdown menus prevents keyboard access, makes mobile interaction difficult, and can cause abrupt animation behavior on close.
+**Action:** Always use click interactions (toggles via `ref`) for dropdown menus instead of `hover`. Replace `invisible` and `group-hover:opacity-100` with conditional `pointer-events-none opacity-0` (closed) and `pointer-events-auto opacity-100` (open) to ensure smooth exit animations while preventing accidental interactions when hidden.
