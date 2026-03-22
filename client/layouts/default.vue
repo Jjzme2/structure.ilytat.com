@@ -13,10 +13,15 @@ const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 const isInboxOpen = ref(false)
 
+// Profile Menu State
+const isProfileMenuOpen = ref(false)
+const profileMenuRef = ref<HTMLElement | null>(null)
+
 // Initialize session timeout monitoring
 useSessionTimeout()
 
 const logout = async () => {
+  isProfileMenuOpen.value = false
   if (auth) {
     await signOut(auth)
     router.push('/login')
@@ -27,13 +32,29 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > config.ui.scrollThreshold
 }
 
+const closeProfileMenu = (e: MouseEvent) => {
+  if (profileMenuRef.value && !profileMenuRef.value.contains(e.target as Node)) {
+    isProfileMenuOpen.value = false
+  }
+}
+
+const closeOnEscape = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    isProfileMenuOpen.value = false
+  }
+}
+
 onMounted(() => {
   initTheme()
   window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', closeProfileMenu)
+  document.addEventListener('keydown', closeOnEscape)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', closeProfileMenu)
+  document.removeEventListener('keydown', closeOnEscape)
 })
 
 watch(user, async (currentUser, prevUser) => {
@@ -54,6 +75,7 @@ watch(user, async (newUser) => {
 
 watch(() => router.currentRoute.value.path, () => {
   isMenuOpen.value = false
+  isProfileMenuOpen.value = false
 })
 </script>
 
@@ -107,28 +129,45 @@ watch(() => router.currentRoute.value.path, () => {
 
 
               <!-- Profile Dropdown -->
-              <div class="relative group hidden sm:block">
-                <button class="relative outline-none">
+              <div ref="profileMenuRef" class="relative hidden sm:block">
+                <button
+                  @click="isProfileMenuOpen = !isProfileMenuOpen"
+                  class="relative outline-none group focus-visible:ring-2 focus-visible:ring-accent-primary rounded-full"
+                  aria-label="Profile Menu"
+                  aria-haspopup="true"
+                  :aria-expanded="isProfileMenuOpen">
                   <div
-                    class="absolute -inset-1 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500">
+                    class="absolute -inset-1 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full blur transition duration-500"
+                    :class="isProfileMenuOpen ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'">
                   </div>
                   <div
-                    class="relative h-9 w-9 rounded-full bg-slate-900 border border-slate-700 group-hover:border-accent-primary flex items-center justify-center text-xs font-black text-accent-primary overflow-hidden shadow-inner transition-colors">
+                    class="relative h-9 w-9 rounded-full bg-slate-900 border flex items-center justify-center text-xs font-black text-accent-primary overflow-hidden shadow-inner transition-colors"
+                    :class="isProfileMenuOpen ? 'border-accent-primary' : 'border-slate-700 group-hover:border-accent-primary'">
                     {{ user?.email?.charAt(0).toUpperCase() || '?' }}
                   </div>
                 </button>
 
                 <!-- Dropdown Menu -->
-                <div
-                  class="absolute right-0 top-full mt-2 w-48 rounded-xl bg-glass backdrop-blur-xl border border-glass shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right z-50 p-1">
-                  <div class="px-4 py-3 border-b border-glass mb-1">
+                <transition
+                  enter-active-class="transition duration-200 ease-out"
+                  enter-from-class="transform scale-95 opacity-0"
+                  enter-to-class="transform scale-100 opacity-100"
+                  leave-active-class="transition duration-75 ease-in"
+                  leave-from-class="transform scale-100 opacity-100"
+                  leave-to-class="transform scale-95 opacity-0">
+                  <div v-show="isProfileMenuOpen"
+                    class="absolute right-0 top-full mt-2 w-48 rounded-xl bg-glass backdrop-blur-xl border border-glass shadow-2xl origin-top-right z-50 p-1"
+                    aria-label="Profile Options"
+                    role="menu">
+                    <div class="px-4 py-3 border-b border-glass mb-1" role="presentation">
                     <p class="text-xs font-bold text-muted uppercase tracking-wider">{{ user?.displayName ||
                       user?.email?.split('@')[0] || 'Operator' }}</p>
                     <p class="text-sm font-medium text-text-primary truncate">{{ user?.email }}</p>
                   </div>
 
                   <NuxtLink v-if="isAdmin" to="/admin"
-                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left group/admin">
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left group/admin"
+                    role="menuitem">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -137,7 +176,8 @@ watch(() => router.currentRoute.value.path, () => {
                   </NuxtLink>
 
                   <NuxtLink to="/settings"
-                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/settings">
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-left group/settings"
+                    role="menuitem">
                     <svg class="w-4 h-4 group-hover/settings:rotate-90 transition-transform duration-500" fill="none"
                       viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -149,14 +189,16 @@ watch(() => router.currentRoute.value.path, () => {
                   </NuxtLink>
 
                   <button @click="logout"
-                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-rose-400 hover:bg-rose-500/10 transition-colors text-left">
+                    class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-rose-400 hover:bg-rose-500/10 transition-colors text-left"
+                    role="menuitem">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     Sign Out
                   </button>
-                </div>
+                  </div>
+                </transition>
               </div>
             </div>
 
