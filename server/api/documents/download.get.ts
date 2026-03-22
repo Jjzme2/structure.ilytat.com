@@ -27,6 +27,16 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR
+    // NOTE: Allow legacy paths (not scoped by uid) for backwards compatibility
+    // while enforcing strict ownership for new user-scoped paths.
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${(auth as any).uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: You do not have access to this document'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
