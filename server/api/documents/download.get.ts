@@ -27,6 +27,14 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (only access own files)
+    if (!key.startsWith(`documents/users/${auth.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
