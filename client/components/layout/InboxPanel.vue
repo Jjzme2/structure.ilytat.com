@@ -17,10 +17,12 @@
         </h2>
         <div class="flex items-center gap-2">
           <button v-if="unreadCount > 0" @click="markAllRead"
-            class="text-xs font-medium text-slate-400 hover:text-indigo-400 transition-colors">
+            class="text-xs font-medium text-slate-400 hover:text-indigo-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded">
             Mark all read
           </button>
-          <button @click="$emit('close')" class="p-2 text-slate-400 hover:text-white transition-colors">
+          <button @click="$emit('close')"
+            aria-label="Close Inbox"
+            class="p-2 text-slate-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg">
             ✕
           </button>
         </div>
@@ -41,13 +43,15 @@
           
           <p class="text-sm text-slate-400 leading-relaxed mb-3">{{ msg.body }}</p>
 
-          <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
              <button v-if="!msg.read" @click="markRead(msg.id)"
-              class="text-xs font-medium text-indigo-400 hover:text-indigo-300">
+              :aria-label="`Mark '${msg.subject}' as Read`"
+              class="text-xs font-medium text-indigo-400 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded px-1">
               Mark Read
             </button>
             <button @click="archive(msg.id)"
-              class="text-xs font-medium text-slate-500 hover:text-rose-400">
+              :aria-label="`Archive '${msg.subject}'`"
+              class="text-xs font-medium text-slate-500 hover:text-rose-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded px-1">
               Archive
             </button>
           </div>

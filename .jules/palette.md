@@ -1,0 +1,3 @@
+## 2024-03-24 - Revealing Actions on Hover for Screen Readers
+**Learning:** Actions containers that use `opacity-0` to visually hide buttons until hover (`group-hover:opacity-100`) are difficult or impossible for keyboard-only users to discover because there is no visual indication that they can receive focus, nor do they appear when focus enters the container.
+**Action:** Always pair `group-hover:opacity-100` with `focus-within:opacity-100` on the container, and ensure the individual buttons have explicit visible focus states (e.g. `focus-visible:outline-none focus-visible:ring-2`) so keyboard users can navigate to and see the hidden actions.
