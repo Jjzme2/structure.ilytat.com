@@ -161,12 +161,12 @@
                                 :class="{ 'line-through text-slate-500': task.status === 'done' }" />
                             <span v-if="task.category"
                                 class="flex-shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                                :class="getCategoryInfo(task.category)?.color">
-                                {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
+                                :class="categoryMap.get(task.category)?.color">
+                                {{ categoryMap.get(task.category)?.emoji }} {{ categoryMap.get(task.category)?.label }}
                             </span>
                             <span v-if="task.okrId"
                                 class="flex-shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                                🎯 {{ getLinkedOKRInfo(task.okrId, task.krId)?.krDescription }}
+                                🎯 {{ okrMap.get(`${task.okrId}|${task.krId}`)?.krDescription }}
                             </span>
                         </div>
                         <p v-if="task.description" class="text-slate-400 text-sm mt-1 line-clamp-2">{{ task.description
@@ -230,12 +230,12 @@
                         <div class="flex flex-wrap gap-1">
                             <span v-if="task.category"
                                 class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                                :class="getCategoryInfo(task.category)?.color">
-                                {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
+                                :class="categoryMap.get(task.category)?.color">
+                                {{ categoryMap.get(task.category)?.emoji }} {{ categoryMap.get(task.category)?.label }}
                             </span>
                             <span v-if="task.okrId"
                                 class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                                🎯 {{ getLinkedOKRInfo(task.okrId, task.krId)?.krDescription }}
+                                🎯 {{ okrMap.get(`${task.okrId}|${task.krId}`)?.krDescription }}
                             </span>
                         </div>
                     </div>
@@ -274,8 +274,8 @@
                             }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                            :class="getCategoryInfo(task.category)?.color">
-                            {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
+                            :class="categoryMap.get(task.category)?.color">
+                            {{ categoryMap.get(task.category)?.emoji }} {{ categoryMap.get(task.category)?.label }}
                         </span>
                     </div>
                 </VueDraggable>
@@ -311,8 +311,8 @@
                             }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                            :class="getCategoryInfo(task.category)?.color">
-                            {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
+                            :class="categoryMap.get(task.category)?.color">
+                            {{ categoryMap.get(task.category)?.emoji }} {{ categoryMap.get(task.category)?.label }}
                         </span>
                     </div>
                 </VueDraggable>
@@ -343,8 +343,8 @@
                             }}</p>
                         <span v-if="task.category"
                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                            :class="getCategoryInfo(task.category)?.color">
-                            {{ getCategoryInfo(task.category)?.emoji }} {{ getCategoryInfo(task.category)?.label }}
+                            :class="categoryMap.get(task.category)?.color">
+                            {{ categoryMap.get(task.category)?.emoji }} {{ categoryMap.get(task.category)?.label }}
                         </span>
                     </div>
                 </VueDraggable>
@@ -391,22 +391,29 @@ const viewMode = computed({
     set: (val) => router.replace({ query: { ...route.query, view: val } })
 })
 
-const getCategoryInfo = (cat: string | null | undefined) => {
-    return getCategoryById(cat)
-}
+// Performance optimization: O(1) lookups for categories and OKRs instead of O(N) finds in template loops
+const categoryMap = computed(() => {
+    const map = new Map()
+    for (const cat of categories.value) {
+        map.set(cat.id, cat)
+    }
+    return map
+})
 
 const okrs = computed(() => strategyStore.okrs || [])
 
-const getLinkedOKRInfo = (okrId: string | null | undefined, krId: string | null | undefined) => {
-    if (!okrId || !krId) return null
-    const okr = okrs.value.find(o => o.id === okrId)
-    if (!okr) return null
-    const kr = okr.keyResults.find(k => k.id === krId)
-    return {
-        objective: okr.objective,
-        krDescription: kr?.description || 'Unknown Key Result'
+const okrMap = computed(() => {
+    const map = new Map()
+    for (const okr of okrs.value) {
+        for (const kr of okr.keyResults) {
+            map.set(`${okr.id}|${kr.id}`, {
+                objective: okr.objective,
+                krDescription: kr.description || 'Unknown Key Result'
+            })
+        }
     }
-}
+    return map
+})
 
 const today = store.getTodayISO()
 const todayFormatted = computed(() => {
