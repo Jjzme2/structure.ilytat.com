@@ -1,0 +1,3 @@
+## 2025-02-23 - Screen Reader Accessibility with Visual Badges
+**Learning:** Decorative visual badges on icon buttons (like unread notification dots) are announced redundantly or poorly by screen readers. A dynamically generated aria-label directly on the `<button>` provides a much cleaner experience, provided the visual elements are hidden using `aria-hidden="true"`.
+**Action:** Always ensure that icon-only buttons containing visual state indicators use a dynamic `aria-label` that includes the state (e.g., "Inbox, 3 unread messages"), and apply `aria-hidden="true"` to both the icon and the badge.
