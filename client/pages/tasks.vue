@@ -430,8 +430,18 @@ const filteredListTasks = computed(() => {
 
     // Priority order: focus > doing > backlog > done
     const statusPriority: Record<string, number> = { focus: 0, doing: 1, backlog: 2, done: 3 }
+    const active = activeFilter.value
 
-    const sorted = [...tasks.value].sort((a, b) => {
+    // ⚡ Bolt Optimization: Filter array *before* sorting to reduce the size of the array being sorted.
+    // Sorting is O(N log N) so reducing N provides measurable performance gains as task count grows.
+    const filtered = tasks.value.filter(t => {
+        if (t.status === 'archived') return false
+        if (active === 'active') return t.status !== 'done'
+        if (active === 'done') return t.status === 'done'
+        return true
+    })
+
+    return filtered.sort((a, b) => {
         // First sort by status priority
         const aPriority = statusPriority[a.status] ?? 4
         const bPriority = statusPriority[b.status] ?? 4
@@ -450,10 +460,6 @@ const filteredListTasks = computed(() => {
         // Then by creation date
         return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
     })
-
-    if (activeFilter.value === 'active') return sorted.filter(t => t.status !== 'done' && t.status !== 'archived')
-    if (activeFilter.value === 'done') return sorted.filter(t => t.status === 'done')
-    return sorted.filter(t => t.status !== 'archived')
 })
 
 // Kanban columns
