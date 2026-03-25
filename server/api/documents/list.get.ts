@@ -4,21 +4,35 @@ import { requireAuth } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    await requireAuth(event)
+    const auth = await requireAuth(event)
 
     try {
-        const command = new ListObjectsV2Command({
+        // 1. Fetch user-specific files
+        const userCommand = new ListObjectsV2Command({
             Bucket: R2_BUCKET,
-            // Prefix: 'documents/' // Optional: if we want to organize in a folder
+            Prefix: `documents/users/${auth.uid}/` // Security: Prevent IDOR, scope list to user
         })
+        const userResponse = await r2Client.send(userCommand)
+        const userFiles = userResponse.Contents || []
 
-        const response = await r2Client.send(command)
+        // 2. Fetch legacy files (backward compatibility)
+        // Without a DB we can't map legacy files, so we return files in the root documents/ dir
+        // This maintains the original system behavior for legacy files while securing new ones
+        const legacyCommand = new ListObjectsV2Command({
+            Bucket: R2_BUCKET,
+            Prefix: 'documents/',
+            Delimiter: '/' // Only get files directly in documents/, not subfolders
+        })
+        const legacyResponse = await r2Client.send(legacyCommand)
+        const legacyFiles = legacyResponse.Contents || []
 
-        return response.Contents?.map(item => ({
+        const allFiles = [...userFiles, ...legacyFiles]
+
+        return allFiles.map(item => ({
             key: item.Key,
             size: item.Size,
             lastModified: item.LastModified
-        })) || []
+        }))
 
     } catch (error: any) {
         console.error('R2 List Error:', error)
