@@ -27,6 +27,17 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (only allow downloading own files)
+    // Legacy files (documents/*) are permitted for backward compatibility
+    const isLegacyFile = key.startsWith('documents/') && !key.startsWith('documents/users/');
+    const expectedPrefix = `documents/users/${auth.uid}/`
+    if (!isLegacyFile && !key.startsWith(expectedPrefix)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: You do not have permission to download this file'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
@@ -71,7 +82,7 @@ export default defineEventHandler(async (event) => {
             await db.collection('activities').add({
                 action: 'document_download',
                 module: 'documents',
-                userId: (auth as any).uid, // auth is the decoded token
+                userId: auth.uid, // auth is the decoded token
                 timestamp: FieldValue.serverTimestamp(),
                 metadata: {
                     key,
