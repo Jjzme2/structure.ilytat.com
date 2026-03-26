@@ -74,7 +74,7 @@ describe('Download Security', () => {
     }
   })
 
-  it('should allow valid keys (e.g., documents/file.pdf)', async () => {
+  it('should allow valid legacy keys (e.g., documents/file.pdf)', async () => {
     global.getQuery.mockReturnValue({ key: 'documents/test-file.pdf' })
 
     const result = await downloadHandler({})
@@ -86,5 +86,29 @@ describe('Download Security', () => {
 
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
+  })
+
+  it('should allow valid user-scoped keys for the owner', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/my-file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+
+    expect(r2Client.send).toHaveBeenCalled()
+    const callArgs = r2Client.send.mock.calls[0][0].input
+
+    expect(callArgs.Key).toBe('documents/users/test-user/my-file.pdf')
+  })
+
+  it('should block access to other users documents (IDOR prevention)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/secret.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+        expect(error.statusCode).toBe(403)
+        expect(error.statusMessage).toContain('Forbidden')
+    }
   })
 })
