@@ -1,0 +1,3 @@
+## 2024-03-27 - Visual Notification Badges on Icon Buttons
+**Learning:** Visual notification badges (e.g., unread dots) on icon buttons should be hidden from screen readers (`aria-hidden='true'`). The state/count should instead be incorporated into the button's dynamic `aria-label` (e.g., `'Inbox, 3 unread messages'`). This ensures the screen reader doesn't announce the button's purpose and then redundantly announce a number without context.
+**Action:** When adding notification badges, always use `aria-hidden` on the badge and update the parent button's `aria-label` dynamically based on the unread count.
