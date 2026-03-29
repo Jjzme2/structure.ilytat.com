@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
         });
         throw createError({
             statusCode: 500,
-            statusMessage: `Internal Server Error: ${error.message || 'Unknown error'}`,
+            statusMessage: 'Internal Server Error',
         });
     }
 });
