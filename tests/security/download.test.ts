@@ -87,4 +87,23 @@ describe('Download Security', () => {
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
+
+  it('should allow downloading own files (e.g., documents/users/test-user/file.pdf)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+  })
+
+  it('should block downloading other users files (IDOR)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Access denied')
+    }
+  })
 })
