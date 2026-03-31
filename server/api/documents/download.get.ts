@@ -27,6 +27,21 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR
+    if (key.startsWith('documents/users/')) {
+        if (!key.startsWith(`documents/users/${(auth as any).uid}/`)) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Unauthorized access to document'
+            })
+        }
+    } else if (!key.startsWith('documents/')) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Unauthorized access to document'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
