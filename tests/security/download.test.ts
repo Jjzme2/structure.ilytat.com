@@ -87,4 +87,23 @@ describe('Download Security', () => {
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
+
+  it('should block IDOR attempts to other users directories', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Unauthorized access to document')
+    }
+  })
+
+  it('should allow valid user keys', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/test-file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+  })
 })
