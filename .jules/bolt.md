@@ -5,6 +5,11 @@
 ## 2025-05-27 - Caching Lists in Composables
 **Learning:** When implementing caching in composables using `useState`, ensure empty lists are also cached by checking a separate flag (e.g. `fetchedUserId` or `isLoaded`) rather than `data.length > 0`. Otherwise, empty states trigger redundant fetches.
 **Action:** Use an explicit "fetched" tracker (boolean or ID) alongside the data.
+
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+
+## 2025-05-27 - Vue Template Loop Array Filtering Anti-Pattern
+**Learning:** Using an O(N) operation like `array.filter()` inside a Vue template loop (e.g. `v-for`) method causes massive redundant calculations on every render, leading to poor performance, especially as lists grow.
+**Action:** Replace repeated O(N) operations inside template loops by pre-computing a Map in a `computed` property, allowing for O(1) lookups during renders.
