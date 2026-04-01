@@ -27,6 +27,14 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (only allow accessing own scoped keys or legacy root ones)
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${auth.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
