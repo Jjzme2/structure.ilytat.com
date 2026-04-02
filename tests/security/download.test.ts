@@ -87,4 +87,27 @@ describe('Download Security', () => {
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
+
+  it('should block access to other user documents (IDOR)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for cross-user access')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden')
+    }
+  })
+
+  it('should allow access to own scoped documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+
+    expect(r2Client.send).toHaveBeenCalled()
+    const callArgs = r2Client.send.mock.calls[0][0].input
+    expect(callArgs.Key).toBe('documents/users/test-user/file.pdf')
+  })
 })
