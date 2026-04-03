@@ -25,9 +25,10 @@ export default defineEventHandler(async (event) => {
         }
 
     } catch (e: any) {
+        console.error('Failed to update user status', e)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Failed to update user status: ' + e.message
+            statusMessage: 'Failed to update user status'
         })
     }
 })
