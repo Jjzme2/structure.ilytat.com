@@ -207,8 +207,21 @@ const dailyFocusTasks = computed(() =>
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0)) || []
 )
 
+// ⚡ Bolt: Cache tasks by OKR and KR to prevent O(N) operations in template renders
+const tasksByKR = computed(() => {
+    const map = new Map<string, Task[]>()
+    tasks.value?.forEach(t => {
+        if (t.okrId != null && t.krId != null) {
+            const key = `${t.okrId}_${t.krId}`
+            if (!map.has(key)) map.set(key, [])
+            map.get(key)!.push(t)
+        }
+    })
+    return map
+})
+
 const getTasksForKR = (okrId: string, krId: string) => {
-    return tasks.value?.filter(t => t.okrId === okrId && t.krId === krId) || []
+    return tasksByKR.value.get(`${okrId}_${krId}`) || []
 }
 
 const getSlot = (index: number) => {
