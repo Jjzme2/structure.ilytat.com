@@ -4,21 +4,35 @@ import { requireAuth } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    await requireAuth(event)
+    const user = await requireAuth(event)
 
     try {
-        const command = new ListObjectsV2Command({
+        // Query user-specific documents
+        const userCommand = new ListObjectsV2Command({
             Bucket: R2_BUCKET,
-            // Prefix: 'documents/' // Optional: if we want to organize in a folder
+            Prefix: `documents/users/${user.uid}/`
         })
+        const userResponse = await r2Client.send(userCommand)
 
-        const response = await r2Client.send(command)
+        // Query legacy documents (excluding other users' directories)
+        const legacyCommand = new ListObjectsV2Command({
+            Bucket: R2_BUCKET,
+            Prefix: 'documents/',
+            Delimiter: '/'
+        })
+        const legacyResponse = await r2Client.send(legacyCommand)
 
-        return response.Contents?.map(item => ({
+        // Combine contents
+        const allContents = [
+            ...(userResponse.Contents || []),
+            ...(legacyResponse.Contents || [])
+        ]
+
+        return allContents.map(item => ({
             key: item.Key,
             size: item.Size,
             lastModified: item.LastModified
-        })) || []
+        }))
 
     } catch (error: any) {
         console.error('R2 List Error:', error)
