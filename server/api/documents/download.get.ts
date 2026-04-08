@@ -27,6 +27,23 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce Ownership (IDOR Prevention)
+    if (key.startsWith('documents/users/')) {
+        // Must match the authenticated user's ID
+        if (!key.startsWith(`documents/users/${auth.uid}/`)) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden: Access denied to this document'
+            })
+        }
+    } else if (!key.startsWith('documents/') || key.split('/').length > 2) {
+        // Ensure legacy files are directly under `documents/` and not somewhere else
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: Invalid document prefix'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
