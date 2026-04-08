@@ -81,7 +81,7 @@
                             :class="t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'">
                             {{ t.type === 'income' ? '+' : '-' }}${{ t.amount.toFixed(2) }}
                         </span>
-                        <button @click="store.deleteTransaction(t.id)"
+                        <button @click="store.deleteTransaction(t.id)" aria-label="Delete transaction"
                             class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-500 transition-all">×</button>
                     </div>
                 </div>
