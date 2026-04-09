@@ -1,0 +1,3 @@
+## 2025-04-09 - Improve Notification Bell Accessibility
+**Learning:** Decorative SVGs inside interactive buttons must explicitly use `aria-hidden="true"` and the button container should handle dynamic `aria-label` declarations. Without this, screen readers may announce the raw SVG code or meaningless default names. Visual status indicators (like unread dots) should also be hidden from assistive technologies, with their state incorporated directly into the button's primary `aria-label`.
+**Action:** Always verify that interactive icon-only elements pair `aria-hidden="true"` on their decorative children with dynamic `aria-label`s on the parent element, ensuring unread counts/status are properly communicated to screen readers.
