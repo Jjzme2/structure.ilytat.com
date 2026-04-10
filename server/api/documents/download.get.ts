@@ -27,6 +27,17 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR
+    const isOwner = key.startsWith(`documents/users/${auth.uid}/`)
+    const isLegacy = key.startsWith('documents/') && !key.startsWith('documents/users/')
+
+    if (!isOwner && !isLegacy) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: Access denied to this file'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
