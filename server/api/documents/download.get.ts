@@ -27,6 +27,17 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce Ownership (IDOR prevention)
+    const isUserScoped = key.startsWith(`documents/users/${(auth as any).uid}/`)
+    const isLegacyUnscoped = key.startsWith('documents/') && !key.startsWith('documents/users/')
+
+    if (!isUserScoped && !isLegacyUnscoped) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
