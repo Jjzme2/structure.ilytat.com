@@ -87,4 +87,15 @@ describe('Download Security', () => {
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
+
+  it('should block access to other users documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/secret.pdf' })
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error: any) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden')
+    }
+  })
 })
