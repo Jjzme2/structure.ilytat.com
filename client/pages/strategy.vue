@@ -207,8 +207,21 @@ const dailyFocusTasks = computed(() =>
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0)) || []
 )
 
+const tasksByKR = computed(() => {
+    const map = new Map<string, Task[]>()
+    if (!tasks.value) return map
+    for (const task of tasks.value) {
+        if (task.okrId && task.krId) {
+            const key = `${task.okrId}-${task.krId}`
+            if (!map.has(key)) map.set(key, [])
+            map.get(key)!.push(task)
+        }
+    }
+    return map
+})
+
 const getTasksForKR = (okrId: string, krId: string) => {
-    return tasks.value?.filter(t => t.okrId === okrId && t.krId === krId) || []
+    return tasksByKR.value.get(`${okrId}-${krId}`) || []
 }
 
 const getSlot = (index: number) => {
