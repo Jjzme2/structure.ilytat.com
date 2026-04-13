@@ -27,6 +27,15 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce ownership / Prevent IDOR
+    const expectedPrefix = `documents/users/${(auth as any).uid}/`
+    if (!key.startsWith(expectedPrefix)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: You do not have access to this document'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
