@@ -8,3 +8,7 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+
+## 2025-02-23 - Vue Performance Optimization: Filter before Sort
+**Learning:** Sorting an entire array before applying a filter results in unnecessary O(N log N) operations on items that will be discarded.
+**Action:** When computing derived arrays, always apply `.filter()` before `.sort()` to reduce the size of the array passed to the sorting algorithm.
