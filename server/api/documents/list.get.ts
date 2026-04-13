@@ -4,12 +4,15 @@ import { requireAuth } from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    await requireAuth(event)
+    const user = await requireAuth(event)
 
     try {
+        // Security: Prevent IDOR by strictly scoping list to user's UID prefix
+        const userPrefix = `documents/users/${user.uid}/`
         const command = new ListObjectsV2Command({
             Bucket: R2_BUCKET,
-            // Prefix: 'documents/' // Optional: if we want to organize in a folder
+            Prefix: userPrefix,
+            Delimiter: '/' // Optional: prevent listing nested subdirectories if any exist
         })
 
         const response = await r2Client.send(command)
