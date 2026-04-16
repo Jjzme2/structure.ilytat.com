@@ -8,3 +8,6 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+## 2025-05-27 - Vue Array Iteration inside Template Loops
+**Learning:** Calling an `O(N)` operation like `array.filter()` inside a computed property that is itself iterated over in a template (or inside a loop) can silently create an `O(N^2)` rendering bottleneck.
+**Action:** Replace `O(N)` nested lookups with a pre-computed `Map` in a computed property, converting inner loop searches to `O(1)` operations.
