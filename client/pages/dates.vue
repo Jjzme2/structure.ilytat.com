@@ -273,6 +273,18 @@ const allEvents = computed(() => {
   return [...corporate, ...prevCorp, ...nextCorp, ...userEventsMapped]
 })
 
+// O(1) event lookup optimization using a computed Map
+const eventsByDate = computed(() => {
+  const map = new Map<string, any[]>()
+  for (const event of allEvents.value) {
+    if (!map.has(event.date)) {
+      map.set(event.date, [])
+    }
+    map.get(event.date)!.push(event)
+  }
+  return map
+})
+
 // Calendar Grid Logic
 const calendarGrid = computed(() => {
   const year = currentYear.value
@@ -331,7 +343,8 @@ const isSameDate = (d1: Date, d2: Date) => {
 
 const getEventsForDate = (date: Date) => {
   const dateStr = date.toISOString().split('T')[0] || ''
-  return allEvents.value.filter(e => e.date === dateStr)
+  // ⚡ Bolt: Performance optimization - Replace O(N) array filter with O(1) Map lookup
+  return eventsByDate.value.get(dateStr) || []
 }
 
 const getEventColor = (event: any) => {
