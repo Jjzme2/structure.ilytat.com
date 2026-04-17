@@ -27,6 +27,14 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (Ensure user only accesses their own documents)
+    if (!key.startsWith(`documents/users/${auth.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: Access denied to this document'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
