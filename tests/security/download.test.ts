@@ -74,8 +74,20 @@ describe('Download Security', () => {
     }
   })
 
+  it('should deny access to documents belonging to other users', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/secret-file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for cross-user document access')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden: Access denied to this document')
+    }
+  })
+
   it('should allow valid keys (e.g., documents/file.pdf)', async () => {
-    global.getQuery.mockReturnValue({ key: 'documents/test-file.pdf' })
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/test-file.pdf' })
 
     const result = await downloadHandler({})
     expect(result).toBe('test-content')
@@ -84,7 +96,7 @@ describe('Download Security', () => {
     expect(r2Client.send).toHaveBeenCalled()
     const callArgs = r2Client.send.mock.calls[0][0].input
 
-    expect(callArgs.Key).toBe('documents/test-file.pdf')
+    expect(callArgs.Key).toBe('documents/users/test-user/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
 })
