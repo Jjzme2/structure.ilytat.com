@@ -74,8 +74,20 @@ describe('Download Security', () => {
     }
   })
 
-  it('should allow valid keys (e.g., documents/file.pdf)', async () => {
-    global.getQuery.mockReturnValue({ key: 'documents/test-file.pdf' })
+  it('should block IDOR attempts to access other users files', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden')
+    }
+  })
+
+  it('should allow valid keys for own files (e.g., documents/users/test-user/test-file.pdf)', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/test-file.pdf' })
 
     const result = await downloadHandler({})
     expect(result).toBe('test-content')
@@ -84,7 +96,21 @@ describe('Download Security', () => {
     expect(r2Client.send).toHaveBeenCalled()
     const callArgs = r2Client.send.mock.calls[0][0].input
 
-    expect(callArgs.Key).toBe('documents/test-file.pdf')
+    expect(callArgs.Key).toBe('documents/users/test-user/test-file.pdf')
+    expect(callArgs.Bucket).toBe('test-bucket')
+  })
+
+  it('should allow legacy non-user-scoped documents for backward compatibility', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/legacy-file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+
+    // Verify R2 download call
+    expect(r2Client.send).toHaveBeenCalled()
+    const callArgs = r2Client.send.mock.calls[0][0].input
+
+    expect(callArgs.Key).toBe('documents/legacy-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
 })
