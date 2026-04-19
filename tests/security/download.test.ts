@@ -87,4 +87,16 @@ describe('Download Security', () => {
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
   })
+
+  it('should block access to other users scoped documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for access denied')
+    } catch (error) {
+        expect(error.statusCode).toBe(403)
+        expect(error.statusMessage).toContain('Access Denied')
+    }
+  })
 })

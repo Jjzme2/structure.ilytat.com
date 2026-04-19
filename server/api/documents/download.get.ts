@@ -27,6 +27,16 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce Ownership (IDOR prevention)
+    // Legacy documents (flat 'documents/') bypass this check for backward compatibility.
+    // New documents (scoped to 'documents/users/') enforce strict ownership.
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${auth.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Access Denied'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
