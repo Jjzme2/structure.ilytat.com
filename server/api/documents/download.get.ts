@@ -7,7 +7,7 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 
 export default defineEventHandler(async (event) => {
     // Verify authentication
-    const auth = await requireAuth(event)
+    const user = await requireAuth(event)
 
     const query = getQuery(event)
     const key = query.key as string
@@ -24,6 +24,14 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 400,
             statusMessage: 'Invalid file key'
+        })
+    }
+
+    // Security: Prevent IDOR for user-scoped documents
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${user.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden'
         })
     }
 
@@ -71,7 +79,7 @@ export default defineEventHandler(async (event) => {
             await db.collection('activities').add({
                 action: 'document_download',
                 module: 'documents',
-                userId: (auth as any).uid, // auth is the decoded token
+                userId: user.uid, // auth is the decoded token
                 timestamp: FieldValue.serverTimestamp(),
                 metadata: {
                     key,
