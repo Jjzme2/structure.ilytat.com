@@ -74,6 +74,18 @@ describe('Download Security', () => {
     }
   })
 
+  it('should block IDOR attempts on scoped documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/secret.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toContain('Forbidden')
+    }
+  })
+
   it('should allow valid keys (e.g., documents/file.pdf)', async () => {
     global.getQuery.mockReturnValue({ key: 'documents/test-file.pdf' })
 
