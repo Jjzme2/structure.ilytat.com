@@ -207,8 +207,24 @@ const dailyFocusTasks = computed(() =>
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0)) || []
 )
 
+// ⚡ Bolt: Pre-compute tasks mapped by KR ID to prevent O(N) filtering per key result on every render
+const tasksByKR = computed(() => {
+    const map = new Map<string, Task[]>()
+    if (!tasks.value) return map
+
+    for (const task of tasks.value) {
+        if (task.okrId && task.krId) {
+            const key = `${task.okrId}-${task.krId}`
+            const list = map.get(key) || []
+            list.push(task)
+            map.set(key, list)
+        }
+    }
+    return map
+})
+
 const getTasksForKR = (okrId: string, krId: string) => {
-    return tasks.value?.filter(t => t.okrId === okrId && t.krId === krId) || []
+    return tasksByKR.value.get(`${okrId}-${krId}`) || []
 }
 
 const getSlot = (index: number) => {
