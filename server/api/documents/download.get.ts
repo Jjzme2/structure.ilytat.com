@@ -29,6 +29,16 @@ export default defineEventHandler(async (event) => {
 
     const isInline = query.inline === 'true'
 
+    // Security: Enforce IDOR protection on user-scoped documents
+    if (key.startsWith('documents/users/')) {
+        if (!key.startsWith(`documents/users/${auth.uid}/`)) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden: You do not have access to this document'
+            })
+        }
+    }
+
     // Security: Prevent MIME Sniffing
     setHeader(event, 'X-Content-Type-Options', 'nosniff')
 
