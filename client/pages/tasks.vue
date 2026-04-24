@@ -397,15 +397,24 @@ const getCategoryInfo = (cat: string | null | undefined) => {
 
 const okrs = computed(() => strategyStore.okrs || [])
 
+// Pre-compute a map of OKR details by KR ID for O(1) lookup in template loops
+// Expected Impact: Reduces O(N * M) nested array searches during render to O(N) map generation + O(1) lookups
+const krInfoMap = computed(() => {
+    const map = new Map<string, { objective: string; krDescription: string }>()
+    for (const okr of okrs.value) {
+        for (const kr of okr.keyResults) {
+            map.set(`${okr.id}-${kr.id}`, {
+                objective: okr.objective,
+                krDescription: kr.description || 'Unknown Key Result'
+            })
+        }
+    }
+    return map
+})
+
 const getLinkedOKRInfo = (okrId: string | null | undefined, krId: string | null | undefined) => {
     if (!okrId || !krId) return null
-    const okr = okrs.value.find(o => o.id === okrId)
-    if (!okr) return null
-    const kr = okr.keyResults.find(k => k.id === krId)
-    return {
-        objective: okr.objective,
-        krDescription: kr?.description || 'Unknown Key Result'
-    }
+    return krInfoMap.value.get(`${okrId}-${krId}`) || null
 }
 
 const today = store.getTodayISO()
