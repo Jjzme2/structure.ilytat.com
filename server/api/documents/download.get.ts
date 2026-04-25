@@ -27,6 +27,15 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Enforce ownership on scoped documents (IDOR prevention)
+    // Legacy documents (not under users/) remain accessible as fallback
+    if (key.startsWith('documents/users/') && !key.startsWith(`documents/users/${auth.uid}/`)) {
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Forbidden: You do not have access to this file'
+        })
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
