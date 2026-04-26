@@ -1,0 +1,3 @@
+## 2024-05-24 - Dynamic ARIA Live Regions in Toast Notifications
+**Learning:** Toast components must dynamically manage `role` and `aria-live` attributes based on their status type. Hardcoding `role="alert"` causes screen readers to aggressively interrupt the user for minor success notifications, leading to cognitive overload, whereas lacking `role="alert"` for critical errors risks missing vital context.
+**Action:** Always implement a ternary or mapped check for `toast.type` to apply `role="alert"` and `aria-live="assertive"` exclusively for `error` or `warning` states, while gracefully falling back to `role="status"` and `aria-live="polite"` for `success` or `info` states.
