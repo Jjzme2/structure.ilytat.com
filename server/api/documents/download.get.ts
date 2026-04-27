@@ -27,6 +27,17 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR (Insecure Direct Object Reference)
+    // Only enforce ownership on scoped documents to maintain legacy support
+    if (key.startsWith('documents/users/')) {
+        if (!key.startsWith(`documents/users/${auth.uid}/`)) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden'
+            })
+        }
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
@@ -71,7 +82,7 @@ export default defineEventHandler(async (event) => {
             await db.collection('activities').add({
                 action: 'document_download',
                 module: 'documents',
-                userId: (auth as any).uid, // auth is the decoded token
+                userId: auth.uid, // auth is the decoded token
                 timestamp: FieldValue.serverTimestamp(),
                 metadata: {
                     key,
