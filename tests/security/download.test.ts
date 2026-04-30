@@ -82,9 +82,32 @@ describe('Download Security', () => {
 
     // Verify R2 download call
     expect(r2Client.send).toHaveBeenCalled()
-    const callArgs = r2Client.send.mock.calls[0][0].input
+    const callArgs = r2Client.send.mock.calls[r2Client.send.mock.calls.length - 1][0].input
 
     expect(callArgs.Key).toBe('documents/test-file.pdf')
     expect(callArgs.Bucket).toBe('test-bucket')
+  })
+
+  it('should block access to other users scoped documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/other-user/file.pdf' })
+
+    try {
+      await downloadHandler({})
+      expect.fail('Should have thrown error for IDOR attempt')
+    } catch (error) {
+        expect(error.statusCode).toBe(403)
+        expect(error.statusMessage).toContain('Forbidden')
+    }
+  })
+
+  it('should allow access to own scoped documents', async () => {
+    global.getQuery.mockReturnValue({ key: 'documents/users/test-user/test-file.pdf' })
+
+    const result = await downloadHandler({})
+    expect(result).toBe('test-content')
+
+    expect(r2Client.send).toHaveBeenCalled()
+    const callArgs = r2Client.send.mock.calls[r2Client.send.mock.calls.length - 1][0].input
+    expect(callArgs.Key).toBe('documents/users/test-user/test-file.pdf')
   })
 })
