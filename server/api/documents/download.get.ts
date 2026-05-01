@@ -27,6 +27,17 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // Security: Prevent IDOR on scoped user files
+    if (key.startsWith('documents/users/')) {
+        const expectedPrefix = `documents/users/${(auth as any).uid}/`
+        if (!key.startsWith(expectedPrefix)) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: 'Forbidden: Cannot access other users files'
+            })
+        }
+    }
+
     const isInline = query.inline === 'true'
 
     // Security: Prevent MIME Sniffing
