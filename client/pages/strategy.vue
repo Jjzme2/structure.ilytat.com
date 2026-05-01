@@ -207,8 +207,22 @@ const dailyFocusTasks = computed(() =>
         .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0)) || []
 )
 
+// Optimization: Pre-compute tasks grouped by okrId and krId to replace O(N) array filtering
+// inside template loops with O(1) Map lookups, significantly improving render performance.
+const tasksByKrMap = computed(() => {
+    const map = new Map<string, Task[]>()
+    if (!tasks.value) return map
+    for (const task of tasks.value) {
+        if (!task.okrId || !task.krId) continue
+        const key = `${task.okrId}-${task.krId}`
+        if (!map.has(key)) map.set(key, [])
+        map.get(key)!.push(task)
+    }
+    return map
+})
+
 const getTasksForKR = (okrId: string, krId: string) => {
-    return tasks.value?.filter(t => t.okrId === okrId && t.krId === krId) || []
+    return tasksByKrMap.value.get(`${okrId}-${krId}`) || []
 }
 
 const getSlot = (index: number) => {
