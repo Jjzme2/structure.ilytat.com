@@ -38,8 +38,9 @@ export const requireAdmin = async (event: any) => {
 
     // Check hardcoded emails (legacy/god mode)
     // TODO: Migrate these users to use claims and remove hardcoded checks
+    // Security: Must ensure email is verified to prevent account takeover
     const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
-    if (user.email && adminEmails.includes(user.email)) {
+    if (user.email && user.email_verified && adminEmails.includes(user.email)) {
         return user;
     }
 
