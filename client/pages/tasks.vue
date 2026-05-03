@@ -391,21 +391,39 @@ const viewMode = computed({
     set: (val) => router.replace({ query: { ...route.query, view: val } })
 })
 
+// ⚡ Bolt: Cache categories for O(1) lookups during template rendering
+const categoryMap = computed(() => {
+    const map = new Map()
+    for (const cat of categories.value) {
+        map.set(cat.id, cat)
+    }
+    return map
+})
+
 const getCategoryInfo = (cat: string | null | undefined) => {
-    return getCategoryById(cat)
+    if (!cat) return null
+    return categoryMap.value.get(cat) || null
 }
 
 const okrs = computed(() => strategyStore.okrs || [])
 
+// ⚡ Bolt: Cache OKRs for O(1) lookups during template rendering
+const okrMap = computed(() => {
+    const map = new Map()
+    for (const okr of okrs.value) {
+        for (const kr of okr.keyResults) {
+            map.set(`${okr.id}|${kr.id}`, {
+                objective: okr.objective,
+                krDescription: kr.description || 'Unknown Key Result'
+            })
+        }
+    }
+    return map
+})
+
 const getLinkedOKRInfo = (okrId: string | null | undefined, krId: string | null | undefined) => {
     if (!okrId || !krId) return null
-    const okr = okrs.value.find(o => o.id === okrId)
-    if (!okr) return null
-    const kr = okr.keyResults.find(k => k.id === krId)
-    return {
-        objective: okr.objective,
-        krDescription: kr?.description || 'Unknown Key Result'
-    }
+    return okrMap.value.get(`${okrId}|${krId}`) || null
 }
 
 const today = store.getTodayISO()
@@ -431,7 +449,17 @@ const filteredListTasks = computed(() => {
     // Priority order: focus > doing > backlog > done
     const statusPriority: Record<string, number> = { focus: 0, doing: 1, backlog: 2, done: 3 }
 
-    const sorted = [...tasks.value].sort((a, b) => {
+    // ⚡ Bolt: Apply O(N) filter before O(N log N) sort to reduce sorting array size
+    let filtered = tasks.value;
+    if (activeFilter.value === 'active') {
+        filtered = filtered.filter(t => t.status !== 'done' && t.status !== 'archived');
+    } else if (activeFilter.value === 'done') {
+        filtered = filtered.filter(t => t.status === 'done');
+    } else {
+        filtered = filtered.filter(t => t.status !== 'archived');
+    }
+
+    return [...filtered].sort((a, b) => {
         // First sort by status priority
         const aPriority = statusPriority[a.status] ?? 4
         const bPriority = statusPriority[b.status] ?? 4
@@ -450,10 +478,6 @@ const filteredListTasks = computed(() => {
         // Then by creation date
         return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
     })
-
-    if (activeFilter.value === 'active') return sorted.filter(t => t.status !== 'done' && t.status !== 'archived')
-    if (activeFilter.value === 'done') return sorted.filter(t => t.status === 'done')
-    return sorted.filter(t => t.status !== 'archived')
 })
 
 // Kanban columns
