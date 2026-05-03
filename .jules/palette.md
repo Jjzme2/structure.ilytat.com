@@ -1,0 +1,3 @@
+## 2025-02-12 - Toast Accessibility Improvements
+**Learning:** Toast components with conditional types (success vs error) require dynamic ARIA attributes because standard notifications should be announced politely (`role="status"`, `aria-live="polite"`), whereas error/warning notifications must interrupt the user assertively (`role="alert"`, `aria-live="assertive"`). Also, icon-only buttons in floating UI elements need explicit `focus-visible` styles to remain keyboard navigable against varied backgrounds.
+**Action:** When creating or modifying notification containers in the future, always implement dynamic role/aria-live bindings based on the notification severity, add `aria-hidden` to decorative icons, and explicitly test keyboard focus states.
