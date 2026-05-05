@@ -1,0 +1,3 @@
+## 2025-02-24 - Dynamic ARIA Live Regions for Toasts
+**Learning:** Toast notifications in this application must dynamically adapt their accessibility roles based on severity. Static `aria-live` or generic `role="alert"` for all toasts degrades the screen reader experience by either interrupting the user for minor updates or failing to alert them of errors.
+**Action:** Always implement `role="alert"` and `aria-live="assertive"` for error/warning toasts, and `role="status"` with `aria-live="polite"` for general/success updates. Additionally, mark decorative icons with `aria-hidden="true"` and provide `aria-label` and focus states for icon-only close buttons.
