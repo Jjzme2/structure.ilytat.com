@@ -8,3 +8,6 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+## 2024-05-24 - Filter before Sort Optimization
+**Learning:** When computing derived arrays, applying `.filter()` before `.sort()` significantly reduces the size of the array passed to the sorting algorithm. Sorting is O(N log N) while filtering is O(N), so reducing N first provides a measurable performance gain.
+**Action:** Always verify the order of operations when processing arrays. Apply `.filter()` before `.sort()` whenever the filter condition is independent of the sorted order.
