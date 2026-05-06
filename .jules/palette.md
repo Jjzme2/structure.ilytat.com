@@ -1,0 +1,4 @@
+
+## 2024-05-06 - Dynamic Toast ARIA Attributes
+**Learning:** Toast notifications need different `role` and `aria-live` attributes based on their severity to ensure screen readers announce them appropriately without disrupting the user unnecessarily. Error and warning toasts should use `role="alert"` and `aria-live="assertive"`, while success and info toasts should use `role="status"` and `aria-live="polite"`. Additionally, purely decorative elements like icons within toasts should have `aria-hidden="true"`, and close buttons must have `aria-label` and visible focus states.
+**Action:** Always dynamically bind `role` and `aria-live` attributes in notification components based on the message type, ensure decorative icons are hidden from screen readers, and provide clear focus states and ARIA labels for interactive elements like close buttons.
