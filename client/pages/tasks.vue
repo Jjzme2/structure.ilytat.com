@@ -27,6 +27,7 @@
                 <div v-if="viewMode === 'list'"
                     class="flex p-1.5 bg-glass border border-glass rounded-2xl shadow-inner">
                     <button v-for="filter in ['all', 'active', 'done']" :key="filter" @click="activeFilter = filter"
+                        :aria-pressed="activeFilter === filter"
                         class="px-6 py-2 rounded-xl text-sm font-bold transition-all duration-300 capitalize"
                         :class="activeFilter === filter ? 'bg-accent-primary text-bg-primary shadow-lg' : 'text-text-secondary hover:text-text-primary'">
                         {{ filter }}
@@ -80,6 +81,7 @@
                 <!-- View Toggle -->
                 <div class="flex p-1 bg-glass border border-glass rounded-xl">
                     <button @click="viewMode = 'list'" class="p-2.5 rounded-lg transition-all" aria-label="Switch to List View"
+                        :aria-pressed="viewMode === 'list'"
                         :class="viewMode === 'list' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -87,6 +89,7 @@
                         </svg>
                     </button>
                     <button @click="viewMode = 'kanban'" class="p-2.5 rounded-lg transition-all" aria-label="Switch to Kanban View"
+                        :aria-pressed="viewMode === 'kanban'"
                         :class="viewMode === 'kanban' ? 'bg-purple-600 text-white' : 'text-slate-500 hover:text-white'">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
