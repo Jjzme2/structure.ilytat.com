@@ -40,6 +40,9 @@ export const requireAdmin = async (event: any) => {
     // TODO: Migrate these users to use claims and remove hardcoded checks
     const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
     if (user.email && adminEmails.includes(user.email)) {
+        if (user.email_verified !== true) {
+            throw createError({ statusCode: 403, statusMessage: 'Forbidden: Unverified admin email' });
+        }
         return user;
     }
 
