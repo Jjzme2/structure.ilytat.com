@@ -1,0 +1,3 @@
+## 2024-05-15 - Dynamic ARIA Live Regions for Toasts
+**Learning:** Toast or notification components must dynamically use `role='alert'` and `aria-live='assertive'` for error/warning types to immediately interrupt screen readers, while using `role='status'` with `aria-live='polite'` for general/success updates to announce when idle. Decorative icons in toasts must also use `aria-hidden='true'`, and close buttons need an explicit `aria-label` and visible focus states.
+**Action:** Always ensure notification components implement dynamic aria-live attributes based on the severity of the notification type.
