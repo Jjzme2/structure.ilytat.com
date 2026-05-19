@@ -68,12 +68,13 @@ describe('Auth Utilities', () => {
     expect(user.role).toBe('admin')
   })
 
-  it('should allow access for hardcoded admin emails (legacy support)', async () => {
+  it('should allow access for hardcoded admin emails (legacy support) with verified email', async () => {
     const event = {}
     global.getHeader.mockReturnValue('Bearer valid-token')
     mockVerifyIdToken.mockResolvedValue({
       uid: 'jj-uid',
       email: 'jj@ilytat.com',
+      email_verified: true, // Needs verified email to pass Sentinel fix
       role: 'member' // Not admin role, but email is whitelisted
     })
 
