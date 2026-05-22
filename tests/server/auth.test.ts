@@ -74,6 +74,7 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'jj-uid',
       email: 'jj@ilytat.com',
+      email_verified: true,
       role: 'member' // Not admin role, but email is whitelisted
     })
 
