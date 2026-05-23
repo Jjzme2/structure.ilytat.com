@@ -46,6 +46,7 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
       email: 'user@example.com',
+      email_verified: true,
       admin: true
     })
 
@@ -60,6 +61,7 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
       email: 'user@example.com',
+      email_verified: true,
       role: 'admin'
     })
 
@@ -74,11 +76,31 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'jj-uid',
       email: 'jj@ilytat.com',
+      email_verified: true,
       role: 'member' // Not admin role, but email is whitelisted
     })
 
     const user = await requireAdmin(event)
     expect(user.email).toBe('jj@ilytat.com')
+  })
+
+  it('should deny access for hardcoded admin emails if not verified', async () => {
+    const event = {}
+    global.getHeader.mockReturnValue('Bearer valid-token')
+    mockVerifyIdToken.mockResolvedValue({
+      uid: 'hacker-uid',
+      email: 'admin@ilytat.com',
+      email_verified: false,
+      role: 'member'
+    })
+
+    try {
+      await requireAdmin(event)
+      expect.fail('Should have thrown Forbidden error')
+    } catch (error) {
+      expect(error.statusCode).toBe(403)
+      expect(error.statusMessage).toBe('Forbidden')
+    }
   })
 
   it('should deny access for regular users without admin claims', async () => {
@@ -87,6 +109,7 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
       email: 'user@example.com',
+      email_verified: true,
       role: 'member'
     })
 
