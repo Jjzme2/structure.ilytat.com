@@ -1,4 +1,4 @@
-import { collection, query, where, orderBy, limit, addDoc, updateDoc, doc, serverTimestamp, onSnapshot, getDocs } from 'firebase/firestore'
+import { collection, query, where, orderBy, limit, addDoc, updateDoc, doc, serverTimestamp, onSnapshot, getDocs, writeBatch } from 'firebase/firestore'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import type { InboxItem } from '~/types'
 
@@ -72,9 +72,18 @@ export const useInbox = () => {
      */
     const markAllRead = async () => {
         if (!user.value) return
-        const batch = inbox.value.filter(m => !m.read)
-        // Note: Batch writes would be better here, but doing parallel for simplicity for now
-        await Promise.all(batch.map(m => markRead(m.id)))
+        const unreadMessages = inbox.value.filter(m => !m.read)
+        if (unreadMessages.length === 0) return
+
+        // ⚡ Bolt Optimization: Replace Promise.all parallel writes with a single writeBatch.
+        // Impact: Reduces network requests from N to 1, drastically reducing latency and overhead.
+        const batch = writeBatch(db)
+        const uid = user.value.uid // Capture outside closure for TS strictness
+        unreadMessages.forEach(m => {
+            const docRef = doc(db, `users/${uid}/inbox`, m.id)
+            batch.update(docRef, { read: true })
+        })
+        await batch.commit()
     }
 
     return {
