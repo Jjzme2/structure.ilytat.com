@@ -1,0 +1,3 @@
+## 2024-05-28 - Custom tooltips and aria-pressed on View Switchers
+**Learning:** Native `title` attributes on custom view switchers/toggle buttons cause redundant tooltips and interfere with custom tooltips, negatively impacting accessibility. Additionally, custom toggle buttons often lack `aria-pressed` state and visible focus styles, impairing keyboard navigation and screen reader clarity.
+**Action:** Always replace native `title` attributes with `aria-label` when custom tooltips are present, use `aria-pressed` to communicate active state, and ensure distinct `focus-visible` styling is applied for keyboard users.
