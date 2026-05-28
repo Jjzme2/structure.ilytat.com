@@ -11,8 +11,9 @@ const toggleScope = () => {
 <template>
   <button
     @click="toggleScope"
-    class="relative group flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-accent-primary/50 transition-all duration-300"
-    :title="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'"
+    class="relative group flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-accent-primary/50 transition-all duration-300 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent-primary"
+    :aria-label="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'"
+    :aria-pressed="scope === 'company'"
   >
     <!-- Indicator Dot -->
     <div 
