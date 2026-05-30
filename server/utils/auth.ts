@@ -40,7 +40,11 @@ export const requireAdmin = async (event: any) => {
     // TODO: Migrate these users to use claims and remove hardcoded checks
     const adminEmails = ['jj@ilytat.com', 'admin@ilytat.com', 'zettler.jj@ilytat.com'];
     if (user.email && adminEmails.includes(user.email)) {
-        return user;
+        if (user.email_verified === true) {
+            return user;
+        } else {
+            console.warn(`requireAdmin: Attempted access by unverified hardcoded admin email ${user.email}`);
+        }
     }
 
     // Check claims
