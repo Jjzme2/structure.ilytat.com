@@ -45,6 +45,7 @@ describe('Auth Utilities', () => {
 
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
+      email_verified: true,
       email: 'user@example.com',
       admin: true
     })
@@ -59,6 +60,7 @@ describe('Auth Utilities', () => {
     global.getHeader.mockReturnValue('Bearer valid-token')
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
+      email_verified: true,
       email: 'user@example.com',
       role: 'admin'
     })
@@ -74,6 +76,7 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'jj-uid',
       email: 'jj@ilytat.com',
+      email_verified: true,
       role: 'member' // Not admin role, but email is whitelisted
     })
 
@@ -86,6 +89,7 @@ describe('Auth Utilities', () => {
     global.getHeader.mockReturnValue('Bearer valid-token')
     mockVerifyIdToken.mockResolvedValue({
       uid: 'user123',
+      email_verified: true,
       email: 'user@example.com',
       role: 'member'
     })
