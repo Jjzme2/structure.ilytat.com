@@ -1,0 +1,3 @@
+## 2024-06-05 - Toast Notification Accessibility Pattern
+**Learning:** Discovered that global toast notifications in Vue needed explicit dynamic `role` (`alert`/`status`) and `aria-live` (`assertive`/`polite`) attributes based on severity (error vs success) so screen readers appropriately announce them immediately or after the current task. Additionally, decorative icons require `aria-hidden="true"` and icon-only close buttons need visible focus states (`focus-visible:ring-2`) and `aria-label`s to be fully accessible.
+**Action:** When creating or modifying global messaging/toast components, always ensure dynamic roles/live regions match message severity and that icon-only interactive elements have proper labels and keyboard focus indicators.
