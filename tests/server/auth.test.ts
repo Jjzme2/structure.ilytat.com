@@ -74,7 +74,8 @@ describe('Auth Utilities', () => {
     mockVerifyIdToken.mockResolvedValue({
       uid: 'jj-uid',
       email: 'jj@ilytat.com',
-      role: 'member' // Not admin role, but email is whitelisted
+      role: 'member', // Not admin role, but email is whitelisted
+      email_verified: true
     })
 
     const user = await requireAdmin(event)
