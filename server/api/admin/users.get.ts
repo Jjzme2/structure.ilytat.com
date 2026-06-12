@@ -31,9 +31,10 @@ export default defineEventHandler(async (event) => {
         }))
 
     } catch (e: any) {
+        console.error('Failed to list users:', e);
         throw createError({
             statusCode: 500,
-            statusMessage: 'Failed to list users: ' + e.message
+            statusMessage: 'Failed to list users'
         })
     }
 })
