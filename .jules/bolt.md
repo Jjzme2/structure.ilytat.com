@@ -8,3 +8,6 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+## 2026-06-16 - Firestore Batch Write Limits
+**Learning:** Firestore has a hard limit of 500 operations per `writeBatch`. When migrating concurrent `Promise.all` operations over arrays (e.g., marking hundreds of messages as read) to a `writeBatch`, failing to chunk the array can cause the batch to crash if the user accumulates more than 500 items.
+**Action:** Always slice large arrays into chunks of `500` or less before looping over them and calling `batch.commit()`.
