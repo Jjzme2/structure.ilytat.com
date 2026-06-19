@@ -8,3 +8,6 @@
 ## 2024-05-22 - Firestore Query Specificity
 **Learning:** Fetching broad collections (e.g., all user tasks) and filtering in memory is a major performance anti-pattern in Firestore, leading to excessive read operations and potential bandwidth issues.
 **Action:** Always construct specific queries using `where` clauses to fetch only the data needed for the current view. Ensure variable scopes are clean to avoid accidental redeclarations that might mask logic errors.
+## 2024-05-24 - Batching Firestore Writes
+**Learning:** Using `writeBatch` combined with chunking (max 500 operations) dramatically reduces latency and network overhead when making bulk updates compared to running `Promise.all` over concurrent `updateDoc` operations. Also, TS strictness requires extracting ref properties like `user.value.uid` before closures.
+**Action:** Always prefer `writeBatch` for bulk Firestore updates and remember to chunk operations into sizes <= 500.
