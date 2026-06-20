@@ -1,4 +1,4 @@
-import { collection, query, where, orderBy, limit, addDoc, updateDoc, doc, serverTimestamp, onSnapshot, getDocs } from 'firebase/firestore'
+import { collection, query, where, orderBy, limit, addDoc, updateDoc, doc, serverTimestamp, onSnapshot, getDocs, writeBatch } from 'firebase/firestore'
 import { useCurrentUser, useFirestore } from 'vuefire'
 import type { InboxItem } from '~/types'
 
@@ -72,9 +72,21 @@ export const useInbox = () => {
      */
     const markAllRead = async () => {
         if (!user.value) return
-        const batch = inbox.value.filter(m => !m.read)
-        // Note: Batch writes would be better here, but doing parallel for simplicity for now
-        await Promise.all(batch.map(m => markRead(m.id)))
+        const unreadMessages = inbox.value.filter(m => !m.read)
+
+        // Firestore allows max 500 writes per batch
+        const chunkSize = 500
+        for (let i = 0; i < unreadMessages.length; i += chunkSize) {
+            const chunk = unreadMessages.slice(i, i + chunkSize)
+            const batch = writeBatch(db)
+
+            for (const message of chunk) {
+                const docRef = doc(db, `users/${user.value.uid}/inbox`, message.id)
+                batch.update(docRef, { read: true })
+            }
+
+            await batch.commit()
+        }
     }
 
     return {
