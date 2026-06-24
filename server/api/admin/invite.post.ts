@@ -50,9 +50,10 @@ export default defineEventHandler(async (event) => {
         }
 
     } catch (e: any) {
+        console.error('Failed to invite user:', e)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Failed to invite user: ' + e.message
+            statusMessage: 'Failed to invite user'
         })
     }
 })
