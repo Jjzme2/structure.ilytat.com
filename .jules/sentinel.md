@@ -7,3 +7,7 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+## 2026-02-07 - Account Takeover via Unverified Email (Firebase Auth)
+**Vulnerability:** `requireAdmin` in `server/utils/auth.ts` authorized users based on hardcoded emails without checking `email_verified: true`.
+**Learning:** Identity providers like Firebase Auth allow users to create accounts with any email address. If an app relies on hardcoded emails for authorization without verifying ownership, an attacker could create an account with an admin's email and bypass authorization.
+**Prevention:** Always explicitly verify `user.email_verified === true` on the decoded token when authorizing users based on hardcoded or custom email lists.
