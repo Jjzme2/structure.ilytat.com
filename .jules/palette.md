@@ -1,0 +1,3 @@
+## 2025-02-13 - Toggle Button ARIA Misuse
+**Learning:** Adding `aria-pressed` to buttons that change their action label dynamically (e.g., changing from "Switch to Company" to "Switch to Personal") is an accessibility anti-pattern. `aria-pressed` should only be used for static toggle buttons (like "Mute") to avoid confusing screen reader announcements combining action text with state.
+**Action:** Before adding `aria-pressed`, verify if the button text remains constant. If the text dynamically changes to describe the *next* state, omit `aria-pressed` and rely solely on the updated `aria-label`.
