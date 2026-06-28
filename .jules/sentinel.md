@@ -7,3 +7,7 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+## 2024-05-23 - Hardcoded Admin Email Verification
+**Vulnerability:** The `requireAdmin` authorization middleware allowed access based on matching an email in a hardcoded list, without checking if the user's email was verified.
+**Learning:** Checking `user.email` without `user.email_verified === true` allows an attacker to create an unverified account using a privileged email address to bypass authorization.
+**Prevention:** Always verify `user.email_verified === true` when authorizing users based on hardcoded or custom email lists using identity providers like Firebase Auth.
