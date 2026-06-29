@@ -7,3 +7,8 @@
 **Vulnerability:** `server/api/documents/download.get.ts` allowed arbitrary file access by passing unvalidated `key` from query directly to `GetObjectCommand`.
 **Learning:** Developers might assume S3 keys are safe from path traversal because object storage is flat, but client logic (like `filename` parsing or access control) can still be exploited using `..` or full paths if not validated. Also, relying on `requireAuth` is insufficient if it doesn't authorize access to the *specific* resource (IDOR).
 **Prevention:** Always validate user-provided keys against an allowlist (e.g. alphanumeric + specific folders) and explicitly reject `..` traversal sequences before passing to storage APIs. Add `X-Content-Type-Options: nosniff` to prevent MIME confusion.
+
+## 2026-02-07 - Admin Account Takeover via Unverified Email
+**Vulnerability:** `requireAdmin` allowed access based on hardcoded email addresses without verifying if the email was actually verified by the user.
+**Learning:** An attacker could create an account with a hardcoded admin email (e.g. `admin@ilytat.com`), and if the identity provider doesn't enforce email verification at signup, the attacker would gain admin privileges without ever proving ownership of the email.
+**Prevention:** Always explicitly check `user.email_verified === true` on the decoded token when authorizing users based on email address.
