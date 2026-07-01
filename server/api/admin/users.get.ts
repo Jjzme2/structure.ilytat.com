@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
             return claims.tenantId === 'ilytat' ||
                 claims.role === 'admin' ||
                 claims.admin === true ||
-                user.email?.endsWith('@ilytat.com') // Implicitly include domain users
+                // Security: Implicitly include domain users only if their email is verified
+                (user.email?.endsWith('@ilytat.com') && user.emailVerified === true)
         })
 
         return tenantUsers.map(user => ({
