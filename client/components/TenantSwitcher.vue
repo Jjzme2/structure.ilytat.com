@@ -12,7 +12,7 @@ const toggleScope = () => {
   <button
     @click="toggleScope"
     class="relative group flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-accent-primary/50 transition-all duration-300"
-    :title="scope === 'company' ? 'Switch to Personal View' : 'Switch to Company View'"
+    :aria-label="scope === 'company' ? 'Switch to Personal View (Currently HQ)' : 'Switch to Company View (Currently ME)'"
   >
     <!-- Indicator Dot -->
     <div 
@@ -26,7 +26,7 @@ const toggleScope = () => {
     </span>
 
     <!-- Tooltip (Optional visual cue) -->
-    <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+    <div aria-hidden="true" class="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
         {{ scope === 'company' ? 'Company Workspace' : 'Personal Workspace' }}
     </div>
   </button>
