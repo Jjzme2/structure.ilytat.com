@@ -1,0 +1,3 @@
+## 2024-07-07 - TenantSwitcher Accessibility Improvement
+**Learning:** Overriding visible text with an `aria-label` (e.g., setting `aria-label="Switch to..."` on an element with visible text "HQ") violates WCAG 2.5.3 (Label in Name). Also, native `title` attributes on elements with custom visual tooltips cause double tooltips and should be replaced with `aria-label`, while the custom tooltip needs `aria-hidden="true"`.
+**Action:** When replacing `title` with `aria-label` on elements with visible text, ensure the visible text is included in the `aria-label`. Hide custom visual tooltips from screen readers using `aria-hidden="true"`.
